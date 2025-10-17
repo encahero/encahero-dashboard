@@ -20,15 +20,11 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { PenLineIcon, Trash2Icon } from "lucide-react";
 import Selector from "@/components/selector";
+import { collectionService } from "@/services";
+import { useQuery } from "@tanstack/react-query";
 
 export default function CollectionTable() {
   const [categories] = useState([
@@ -38,38 +34,20 @@ export default function CollectionTable() {
     "Grammar",
   ]);
 
-  const [collections, setCollections] = useState([
-    {
-      id: 1,
-      name: "Daily Conversation",
-      categoryName: "Vocabulary",
-      register_count: 0,
-      card_count: 0,
-      updated_at: "2025-09-16T04:26:28.847Z",
-    },
-    {
-      id: 2,
-      name: "Travel",
-      categoryName: "Travel English",
-      register_count: 0,
-      card_count: 5,
-      updated_at: "2025-09-16T04:26:28.847Z",
-    },
-    {
-      id: 3,
-      name: "Business",
-      categoryName: "Business English",
-      register_count: 2,
-      card_count: 3,
-      updated_at: "2025-09-15T08:12:00.000Z",
-    },
-  ]);
-
   const [modalOpen, setModalOpen] = useState(false);
   const [editCollection, setEditCollection] = useState(null);
   const [name, setName] = useState("");
   const [categoryName, setCategoryName] = useState(categories[0]);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+
+  const {
+    data: collections = [],
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["collections"],
+    queryFn: () => collectionService.getAllCollections(),
+  });
 
   const handleSave = () => {
     if (!name) return;

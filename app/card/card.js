@@ -1,33 +1,49 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
 import CardTable from "@/components/card-table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import CardCreation from "@/components/card-creation";
+import { cardsService } from "@/services";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export default function Cards() {
-  const [cards, setCards] = useState([
-    {
-      id: 1,
-      en_word: "apple",
-      vn_word: "táo",
-      vn_choice: ["táo", "cam", "chuối", "nho"],
-      en_choice: ["apple", "orange", "banana", "grape"],
-      meaning: "Quả táo, loại trái cây phổ biến",
-      ex: ["I eat an apple every morning", "She bought some apples yesterday"],
-      image_url: "https://example.com/images/apple.png",
-      type: "noun",
-      created_at: "2025-09-19T21:27:41.985Z",
-      updated_at: "2025-09-19T21:27:41.985Z",
-      collectionName: "Common",
-    },
-  ]);
-
   const [modalOpen, setModalOpen] = useState(false);
   const [editCard, setEditCard] = useState(null);
+  const queryClient = useQueryClient();
+  const {
+    data: cards = [],
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["cards"],
+    queryFn: () => cardsService.getAllCards(),
+  });
+
+  const saveMutation = useMutation({
+    mutationFn: (data) => {
+      if (editCard) {
+        return cardsService.updateCard(editCard.id, data);
+      } else {
+        return cardsService.createCard(data);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["cards"]);
+      setModalOpen(false);
+      setEditCard(null);
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => cardsService.deleteCard(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["cards"]);
+    },
+  });
 
   const handleSave = (data) => {
     const newCard = {

@@ -3,6 +3,7 @@ import "./globals.css";
 import { AuthProvider } from "@/context/auth";
 import DefaultLayout from "./layout/default-layout";
 import { ThemeProvider } from "@/context/theme";
+import QueryProvider from "@/context/query-client";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,11 +26,13 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider>
-          <AuthProvider>
-            <DefaultLayout>{children}</DefaultLayout>
-          </AuthProvider>
-        </ThemeProvider>
+        <QueryProvider>
+          <ThemeProvider>
+            <AuthProvider>
+              <DefaultLayout>{children}</DefaultLayout>
+            </AuthProvider>
+          </ThemeProvider>
+        </QueryProvider>
       </body>
     </html>
   );

@@ -21,20 +21,22 @@ import {
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { PenLineIcon, Trash2Icon } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { categoryService } from "@/services";
 
 export default function CategoryTable() {
-  const [categories, setCategories] = useState([
-    { id: 1, name: "Vocabulary", updated_at: "today", collection_count: 1 },
-    { id: 2, name: "Hello", updated_at: "today", collection_count: 1 },
-    { id: 3, name: "Abc", updated_at: "today", collection_count: 1 },
-    { id: 4, name: "Vocabulary 1", updated_at: "today", collection_count: 1 },
-    { id: 5, name: "Example", updated_at: "today", collection_count: 1 },
-    // { id: 6, name: "Test", updated_at: "today", collection_count: 1 },
-  ]);
-
   const [modalOpen, setModalOpen] = useState(false);
   const [editCategory, setEditCategory] = useState(null);
   const [name, setName] = useState("");
+
+  const {
+    data: categories = [],
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["category"],
+    queryFn: () => categoryService.getAllCategories(),
+  });
 
   const handleSave = () => {
     if (!name) return;

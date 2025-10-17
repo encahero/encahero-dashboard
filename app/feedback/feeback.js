@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import {
   Card,
@@ -19,72 +19,20 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
-// Dữ liệu sample đúng với backend của bạn
-const SAMPLE = [
-  {
-    id: 1,
-    text: "Hello",
-    user_id: 1,
-    user: {
-      id: 1,
-      email: "danhtuan3103@gmail.com",
-      username: "danhtuan31036157",
-      avatar:
-        "https://lh3.googleusercontent.com/a/ACg8ocJ4Lrcf93FQDDUb6BWWJJUPApujonlU_6l1s2N0mYd5XaDGzTIo=s96-c",
-      firstName: "Tuấn",
-      lastName: "Danh",
-    },
-    images: [
-      "1760624821121-67d0r3foke8-image_0.jpg",
-      "1760624821134-2cu0sc2dnzl-image_1.jpg",
-    ],
-    createdAt: "2025-10-16T14:27:01.141Z",
-  },
-
-  {
-    id: 2,
-    text: "Hello Abc",
-    user_id: 1,
-    user: {
-      id: 1,
-      email: "danhtuan3103@gmail.com",
-      username: "danhtuan31036157",
-      avatar:
-        "https://lh3.googleusercontent.com/a/ACg8ocJ4Lrcf93FQDDUb6BWWJJUPApujonlU_6l1s2N0mYd5XaDGzTIo=s96-c",
-      firstName: "Tuấn",
-      lastName: "Danh",
-    },
-    images: [
-      "1760624821121-67d0r3foke8-image_0.jpg",
-      "1760624821134-2cu0sc2dnzl-image_1.jpg",
-    ],
-    createdAt: "2025-10-16T14:27:01.141Z",
-  },
-  {
-    id: 15,
-    text: "Hello",
-    user_id: 1,
-    user: {
-      id: 1,
-      email: "danhtuan3103@gmail.com",
-      username: "danhtuan31036157",
-      avatar:
-        "https://lh3.googleusercontent.com/a/ACg8ocJ4Lrcf93FQDDUb6BWWJJUPApujonlU_6l1s2N0mYd5XaDGzTIo=s96-c",
-      firstName: "Tuấn",
-      lastName: "Danh",
-    },
-    images: [
-      "1760624821121-67d0r3foke8-image_0.jpg",
-      "1760624821134-2cu0sc2dnzl-image_1.jpg",
-    ],
-    createdAt: "2025-10-16T14:27:01.141Z",
-  },
-];
+import { feedbackService } from "@/services";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Feedback() {
-  const [feedbacks, setFeedbacks] = useState(SAMPLE || []);
   const [previewImage, setPreviewImage] = useState(null);
+
+  const {
+    data: feedbacks = [],
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["feedbacks"],
+    queryFn: () => feedbackService.getAllFeedBack(),
+  });
 
   return (
     <div className="p-12">
