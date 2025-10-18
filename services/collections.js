@@ -8,3 +8,33 @@ export const getAllCollections = async () => {
     throw new Error(error);
   }
 };
+
+export const createCollection = async (name, categoryName) => {
+  try {
+    const res = await instance.post("/collections", { name, categoryName });
+    return res.data;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+export const updateCollection = async (id, name, categoryName) => {
+  try {
+    const res = await instance.patch(`/collections/${id}`, {
+      name,
+      categoryName,
+    });
+    return res.data;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+export const deleteCollection = async (id) => {
+  try {
+    const res = await instance.delete(`/collections/${id}`);
+    return res.data;
+  } catch (error) {
+    throw new Error(error);
+  }
+};

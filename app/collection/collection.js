@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -23,70 +23,84 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 import { PenLineIcon, Trash2Icon } from "lucide-react";
 import Selector from "@/components/selector";
-import { collectionService } from "@/services";
-import { useQuery } from "@tanstack/react-query";
+import { categoryService, collectionService } from "@/services";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export default function CollectionTable() {
-  const [categories] = useState([
-    "Vocabulary",
-    "Travel English",
-    "Business English",
-    "Grammar",
-  ]);
-
+export default function Collection() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editCollection, setEditCollection] = useState(null);
   const [name, setName] = useState("");
-  const [categoryName, setCategoryName] = useState(categories[0]);
+  const [categoryName, setCategoryName] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+  const queryClient = useQueryClient();
 
   const {
-    data: collections = [],
+    data: categories = [],
     isLoading,
     isError,
   } = useQuery({
+    queryKey: ["category"],
+    queryFn: () => categoryService.getAllCategories(),
+  });
+
+  const { data: collections = [] } = useQuery({
     queryKey: ["collections"],
     queryFn: () => collectionService.getAllCollections(),
   });
+
+  useEffect(() => {
+    if (categories.length > 0 && !categoryName) {
+      setCategoryName(categories[0].name);
+    }
+  }, [categories]);
+
+  const { mutate: createCol } = useMutation({
+    mutationFn: ({ name, categoryName }) =>
+      collectionService.createCollection(name, categoryName),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["collections"]);
+      setModalOpen(false);
+    },
+    onError: (err) => alert(err.message),
+  });
+
+  const { mutate: updateCol } = useMutation({
+    mutationFn: ({ id, name, categoryName }) =>
+      collectionService.updateCollection(id, name, categoryName),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["collections"]);
+      setModalOpen(false);
+    },
+    onError: (err) => alert(err.message),
+  });
+
+  const { mutate: deleteCol } = useMutation({
+    mutationFn: (id) => collectionService.deleteCollection(id),
+    onSuccess: () => queryClient.invalidateQueries(["collections"]),
+    onError: (err) => alert(err.message),
+  });
+
+  const handleEdit = (col) => {
+    setEditCollection(col);
+    setName(col.name);
+    setCategoryName(col.category.name);
+    setModalOpen(true);
+  };
 
   const handleSave = () => {
     if (!name) return;
 
     if (editCollection) {
-      setCollections((prev) =>
-        prev.map((c) =>
-          c.id === editCollection.id
-            ? { ...c, name, categoryName, updated_at: new Date().toISOString() }
-            : c
-        )
-      );
+      updateCol({ id: editCollection.id, name, categoryName });
     } else {
-      const newCol = {
-        id: collections.length + 1,
-        name,
-        categoryName,
-        register_count: 0,
-        card_count: 0,
-        updated_at: new Date().toISOString(),
-      };
-      setCollections([...collections, newCol]);
+      createCol({ name, categoryName });
     }
-
-    setModalOpen(false);
-    setName("");
-    setCategoryName(categories[0]);
-    setEditCollection(null);
-  };
-
-  const handleEdit = (col) => {
-    setEditCollection(col);
-    setName(col.name);
-    setCategoryName(col.categoryName);
-    setModalOpen(true);
   };
 
   const handleDelete = (id) => {
-    setCollections(collections.filter((c) => c.id !== id));
+    if (confirm("Are you sure?")) {
+      deleteCol(id);
+    }
   };
 
   const handleSort = (key) => {
@@ -171,7 +185,7 @@ export default function CollectionTable() {
                   <TableCell className="px-4 py-2">{col.id}</TableCell>
                   <TableCell className="px-4 py-2">{col.name}</TableCell>
                   <TableCell className="px-4 py-2">
-                    {col.categoryName}
+                    {col.category.name}
                   </TableCell>
                   <TableCell className="px-4 py-2">{col.card_count}</TableCell>
                   <TableCell className="px-4 py-2">
@@ -182,14 +196,14 @@ export default function CollectionTable() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => handleEdit(cat)}
+                      onClick={() => handleEdit(col)}
                     >
                       <PenLineIcon />
                     </Button>
                     <Button
                       size="sm"
                       variant="destructive"
-                      onClick={() => handleDelete(cat.id)}
+                      onClick={() => handleDelete(col.id)}
                     >
                       <Trash2Icon />
                     </Button>
@@ -233,6 +247,7 @@ export default function CollectionTable() {
                 value={categoryName}
                 onValueChange={setCategoryName}
                 list={categories}
+                property={"name"}
               />
             </div>
 

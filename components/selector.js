@@ -6,7 +6,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-function Selector({ value, onValueChange, list = [], triggerClassName }) {
+function Selector({
+  value,
+  onValueChange,
+  list = [],
+  triggerClassName,
+  property = null,
+}) {
   return (
     <Select value={value} onValueChange={onValueChange}>
       <SelectTrigger className={`w-full ${triggerClassName}`}>
@@ -15,8 +21,8 @@ function Selector({ value, onValueChange, list = [], triggerClassName }) {
       <SelectContent>
         {list.map((val, index) => {
           return (
-            <SelectItem key={index} value={val}>
-              {val}
+            <SelectItem key={index} value={property ? val[property] : val}>
+              {property ? val[property] : val}
             </SelectItem>
           );
         })}

@@ -21,13 +21,43 @@ import {
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { PenLineIcon, Trash2Icon } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { categoryService } from "@/services";
 
 export default function CategoryTable() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editCategory, setEditCategory] = useState(null);
   const [name, setName] = useState("");
+  const queryClient = useQueryClient();
+
+  const { mutate: createCat } = useMutation({
+    mutationFn: (name) => categoryService.createCategory(name),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["category"]); // reload list
+      setModalOpen(false);
+      setName("");
+    },
+    onError: (err) => alert(err.message),
+  });
+
+  const { mutate: deleteCat } = useMutation({
+    mutationFn: (id) => categoryService.deleteCategory(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["category"]); // reload list
+    },
+    onError: (err) => alert(err.message),
+  });
+
+  const { mutate: updateCat } = useMutation({
+    mutationFn: ({ id, name }) => categoryService.updateCategory(id, name),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["category"]);
+      setModalOpen(false);
+      setName("");
+      setEditCategory(null);
+    },
+    onError: (err) => alert(err.message),
+  });
 
   const {
     data: categories = [],
@@ -40,28 +70,11 @@ export default function CategoryTable() {
 
   const handleSave = () => {
     if (!name) return;
-
     if (editCategory) {
-      setCategories((prev) =>
-        prev.map((c) =>
-          c.id === editCategory.id
-            ? { ...c, name, updated_at: new Date().toISOString() }
-            : c
-        )
-      );
+      updateCat({ id: editCategory.id, name });
     } else {
-      const newCat = {
-        id: categories.length + 1,
-        name,
-        updated_at: new Date().toISOString(),
-        collection_count: 0,
-      };
-      setCategories([...categories, newCat]);
+      createCat(name);
     }
-
-    setModalOpen(false);
-    setName("");
-    setEditCategory(null);
   };
 
   const handleEdit = (cat) => {
@@ -71,7 +84,9 @@ export default function CategoryTable() {
   };
 
   const handleDelete = (id) => {
-    setCategories(categories.filter((c) => c.id !== id));
+    if (confirm("Are you sure?")) {
+      deleteCat(id);
+    }
   };
 
   return (
