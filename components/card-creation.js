@@ -18,7 +18,7 @@ import Selector from "./selector";
 import { useQuery } from "@tanstack/react-query";
 import { collectionService } from "@/services";
 
-function CardCreation({ isOpen, close, isEdit, onSubmit, defaultValues }) {
+function CardCreation({ isOpen, onClose, isEdit, onSubmit, defaultValues }) {
   const { data: collections = [] } = useQuery({
     queryKey: ["collections"],
     queryFn: () => collectionService.getAllCollections(),
@@ -47,10 +47,29 @@ function CardCreation({ isOpen, close, isEdit, onSubmit, defaultValues }) {
     reset(defaultValues || {});
   }, [defaultValues, reset]);
 
-  const handleFileUpload = () => {};
+  const handleFormSubmit = (data) => {
+    onSubmit(data);
+    reset();
+    setImageType("url");
+  };
 
+  const handleFileUpload = () => {};
+  const handleClose = () => {
+    reset({
+      en_word: "",
+      vn_word: "",
+      type: "",
+      meaning: "",
+      ex: [""],
+      en_choice: "",
+      vn_choice: "",
+      image_url: "",
+      collectionId: "",
+    });
+    onClose();
+  };
   return (
-    <Dialog open={isOpen} onOpenChange={close}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent
         className="p-0 flex flex-col max-h-[80vh]"
         onPointerDownOutside={(e) => {
@@ -69,7 +88,7 @@ function CardCreation({ isOpen, close, isEdit, onSubmit, defaultValues }) {
         </div>
 
         <form
-          onSubmit={handleSubmit(onSubmit)}
+          onSubmit={handleSubmit(handleFormSubmit)}
           className="p-4 overflow-y-auto flex-1 space-y-4"
         >
           <div className="grid gap-4 py-4">

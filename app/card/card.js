@@ -29,7 +29,6 @@ export default function Cards() {
     mutationFn: (data) => {
       const formData = convertCardFormData(data);
       if (editCard) {
-        console.log(editCard);
         return cardsService.updateCard(editCard.id, formData);
       } else {
         return cardsService.createCard(formData);
@@ -61,12 +60,17 @@ export default function Cards() {
   };
 
   const handleDelete = (id) => {
-    setCards(cards.filter((c) => c.id !== id));
+    if (confirm("Are you sure ?")) deleteMutation.mutate(id);
+  };
+
+  const handleClose = () => {
+    setEditCard(null);
+    setModalOpen(false);
   };
 
   return (
-    <ScrollArea className="h-full">
-      <div className="p-8">
+    <div className="h-full flex-1">
+      <div className="p-8 h-full">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-3xl font-bold">Cards</h1>
           <Button onClick={() => setModalOpen(true)}>New Card</Button>
@@ -83,12 +87,12 @@ export default function Cards() {
 
         <CardCreation
           isOpen={modalOpen}
-          close={() => setModalOpen(false)}
+          onClose={handleClose}
           isEdit={!!editCard}
           defaultValues={editCard}
           onSubmit={handleSave}
         />
       </div>
-    </ScrollArea>
+    </div>
   );
 }

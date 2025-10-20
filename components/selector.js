@@ -13,10 +13,12 @@ function Selector({
   triggerClassName,
   property = null,
   displayProperty = null,
+  placeholder = "Select",
 }) {
   const selectedLabel = property
     ? list.find((item) => item[property] === value)?.[displayProperty] ?? ""
     : value;
+
   return (
     <Select
       value={value}
@@ -26,9 +28,7 @@ function Selector({
       }}
     >
       <SelectTrigger className={`w-full ${triggerClassName}`}>
-        <SelectValue placeholder="Select Collection">
-          {selectedLabel}
-        </SelectValue>
+        <SelectValue placeholder={placeholder}>{selectedLabel}</SelectValue>
       </SelectTrigger>
       <SelectContent>
         {list.map((val, index) => {

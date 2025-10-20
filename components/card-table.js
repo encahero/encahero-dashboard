@@ -14,7 +14,6 @@ import { Input } from "./ui/input";
 import Selector from "./selector";
 import { useQuery } from "@tanstack/react-query";
 import { collectionService } from "@/services";
-import getImageUrl from "@/utils/get-image-url";
 import ImageWithFallback from "./image-with-fallback";
 
 function CardTable({ data, onDelete, onEdit }) {
@@ -73,10 +72,10 @@ function CardTable({ data, onDelete, onEdit }) {
         />
       </div>
 
-      <ScrollArea className="h-[80vh] border rounded bg-[var(--sidebar)]">
+      <ScrollArea className="h-[76vh] border rounded bg-[var(--sidebar)]">
         <Table noWrapper className="w-full">
           <TableHeader>
-            <TableRow className="bg-gray-100 dark:bg-stone-950 sticky top-0 z-10">
+            <TableRow className="bg-gray-100 dark:bg-stone-950 sticky top-0 z-10 hover:bg-muted/100">
               <TableHead className="px-4 py-2">ID</TableHead>
               <TableHead className="px-4 py-2">Thumbnail</TableHead>
               <TableHead className="px-4 py-2">EN Word</TableHead>
@@ -90,7 +89,10 @@ function CardTable({ data, onDelete, onEdit }) {
 
           <TableBody>
             {filteredCards.map((card) => (
-              <TableRow key={card.id}>
+              <TableRow
+                key={card.id}
+                className="hover:bg-gray-200 dark:hover:bg-stone-800"
+              >
                 <TableCell className="px-4 py-2">{card.id}</TableCell>
                 <TableCell className="px-4 py-2">
                   <ImageWithFallback
