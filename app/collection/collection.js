@@ -25,6 +25,7 @@ import { PenLineIcon, Trash2Icon } from "lucide-react";
 import Selector from "@/components/selector";
 import { categoryService, collectionService } from "@/services";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import formatDate from "@/utils/format-date";
 
 export default function Collection() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -191,7 +192,9 @@ export default function Collection() {
                   <TableCell className="px-4 py-2">
                     {col.register_count}
                   </TableCell>
-                  <TableCell className="px-4 py-2">{col.updated_at}</TableCell>
+                  <TableCell className="px-4 py-2">
+                    {formatDate(col.updated_at)}
+                  </TableCell>
                   <TableCell className="px-4 py-2 space-x-2">
                     <Button
                       size="sm"

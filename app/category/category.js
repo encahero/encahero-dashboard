@@ -23,6 +23,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { PenLineIcon, Trash2Icon } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { categoryService } from "@/services";
+import formatDate from "@/utils/format-date";
 
 export default function CategoryTable() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -116,7 +117,9 @@ export default function CategoryTable() {
                   <TableCell className="px-4 py-2">
                     {cat.collection_count}
                   </TableCell>
-                  <TableCell className="px-4 py-2">{cat.updated_at}</TableCell>
+                  <TableCell className="px-4 py-2">
+                    {formatDate(cat.updated_at)}
+                  </TableCell>
                   <TableCell className="px-4 py-2 space-x-2">
                     <Button
                       size="sm"

@@ -16,16 +16,34 @@ import {
   CartesianGrid,
   ResponsiveContainer,
 } from "recharts";
+import formatDate from "@/utils/format-date";
+
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div
+        className="p-2 border rounded shadow text-sm 
+                      bg-white dark:bg-gray-800 
+                      text-black dark:text-white 
+                      border-gray-200 dark:border-gray-700"
+      >
+        <p className="font-semibold">{label}</p>
+        <p>Số lượng: {payload[0].value}</p>
+      </div>
+    );
+  }
+  return null;
+};
 
 function getFilteredData(data, filterType) {
   const grouped = {};
 
   data.forEach((item) => {
-    const date = new Date(item.createdAt);
+    const date = new Date(item.date);
     let key = "";
 
     if (filterType === "day") {
-      key = date.toISOString().split("T")[0]; // YYYY-MM-DD
+      key = formatDate(date);
     } else if (filterType === "month") {
       key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
         2,
@@ -45,12 +63,18 @@ function getFilteredData(data, filterType) {
 export default function UserGrowChart({ data }) {
   const [filterType, setFilterType] = useState("day");
 
-  const filteredData = getFilteredData(data, filterType); // Hàm handle group
+  const formattedData = data.map((d) => ({
+    date: new Date(d.date), // ✅ parse date
+    count: Number(d.count), // ✅ convert to number
+  }));
+
+  const filteredData = getFilteredData(formattedData, filterType); // Hàm handle group
 
   return (
     <Card>
       <CardHeader className="flex justify-between items-center">
         <CardTitle>User Growth</CardTitle>
+
         <Select value={filterType} onValueChange={setFilterType}>
           <SelectTrigger className="w-32">
             <SelectValue placeholder="Filter" />
@@ -69,7 +93,7 @@ export default function UserGrowChart({ data }) {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="label" />
             <YAxis />
-            <Tooltip />
+            <Tooltip content={CustomTooltip} />
             <Line
               type="monotone"
               dataKey="count"

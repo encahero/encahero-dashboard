@@ -15,8 +15,8 @@ import Selector from "./selector";
 
 function CardTable({ data, onDelete, onEdit }) {
   const [search, setSearch] = useState("");
-  const [filterCollection, setFilterCollection] = useState("all");
-  const [filterType, setFilterType] = useState("all");
+  const [filterCollection, setFilterCollection] = useState("");
+  const [filterType, setFilterType] = useState("");
 
   // Filter + search cards
   const filteredCards = useMemo(() => {
@@ -50,12 +50,14 @@ function CardTable({ data, onDelete, onEdit }) {
           value={filterCollection}
           onValueChange={setFilterCollection}
           list={["all", "common", "daily conversation daily"]}
+          placeholder="Collection"
           triggerClassName="w-48"
         />
 
         <Selector
           value={filterType}
           onValueChange={setFilterType}
+          placeholder="Type"
           list={["all", "noun", "verb", "adj"]}
           triggerClassName="w-48"
         />
@@ -70,7 +72,7 @@ function CardTable({ data, onDelete, onEdit }) {
               <TableHead className="px-4 py-2">VN Word</TableHead>
               <TableHead className="px-4 py-2">Type</TableHead>
               <TableHead className="px-4 py-2">Collection</TableHead>
-              <TableHead className="px-4 py-2">Updated At</TableHead>
+
               <TableHead className="px-4 py-2">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -88,9 +90,7 @@ function CardTable({ data, onDelete, onEdit }) {
                 <TableCell className="px-4 py-2 max-w-[200px] overflow-hidden whitespace-nowrap truncate">
                   {card.collectionName}
                 </TableCell>
-                <TableCell className="px-4 py-2 max-w-[200px]">
-                  {card.updated_at}
-                </TableCell>
+
                 <TableCell className="px-4 py-2 space-x-2">
                   <Button
                     size="sm"

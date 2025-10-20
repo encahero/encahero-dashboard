@@ -23,7 +23,7 @@ export default function SideBar() {
           <Link key={item.name} href={item.href}>
             <Button
               variant="ghost" // luôn dùng ghost, còn màu chỉnh bằng class
-              className={`w-full text-left rounded-md ${
+              className={`w-full text-left cursor-pointer rounded-md ${
                 isActive
                   ? "bg-blue-500 text-white dark:bg-blue-600"
                   : "text-gray-900 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700"

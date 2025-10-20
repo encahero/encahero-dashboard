@@ -97,7 +97,6 @@ export default function Cards() {
           />
         </div>
 
-        {/* Modal không nằm trong ScrollArea */}
         <CardCreation
           isOpen={modalOpen}
           close={() => setModalOpen(false)}
