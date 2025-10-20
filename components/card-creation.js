@@ -1,6 +1,5 @@
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -9,26 +8,22 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { Textarea } from "./ui/textarea";
 import { PlusIcon, Trash2Icon } from "lucide-react";
 import Selector from "./selector";
+import { useQuery } from "@tanstack/react-query";
+import { collectionService } from "@/services";
 
 function CardCreation({ isOpen, close, isEdit, onSubmit, defaultValues }) {
-  const [collections, setCollections] = useState([
-    "Common",
-    "Business",
-    "Travel",
-  ]);
+  const { data: collections = [] } = useQuery({
+    queryKey: ["collections"],
+    queryFn: () => collectionService.getAllCollections(),
+  });
+
   const [imageType, setImageType] = useState("url");
   const { register, handleSubmit, reset, control } = useForm({
     defaultValues: defaultValues || {
@@ -40,7 +35,7 @@ function CardCreation({ isOpen, close, isEdit, onSubmit, defaultValues }) {
       en_choice: "",
       vn_choice: "",
       image_url: "",
-      collectionName: "",
+      collectionId: "",
     },
   });
 
@@ -177,12 +172,14 @@ function CardCreation({ isOpen, close, isEdit, onSubmit, defaultValues }) {
               <label className="text-sm font-medium">Collection</label>
               <Controller
                 control={control}
-                name="collectionName"
+                name="collectionId"
                 render={({ field }) => (
                   <Selector
                     value={field.value}
                     onValueChange={field.onChange}
                     list={collections}
+                    property={"id"}
+                    displayProperty={"name"}
                   />
                 )}
               />

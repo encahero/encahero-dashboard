@@ -12,11 +12,20 @@ import { PenLineIcon, Trash2Icon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Input } from "./ui/input";
 import Selector from "./selector";
+import { useQuery } from "@tanstack/react-query";
+import { collectionService } from "@/services";
+import getImageUrl from "@/utils/get-image-url";
+import ImageWithFallback from "./image-with-fallback";
 
 function CardTable({ data, onDelete, onEdit }) {
   const [search, setSearch] = useState("");
   const [filterCollection, setFilterCollection] = useState("");
   const [filterType, setFilterType] = useState("");
+
+  const { data: collections = [] } = useQuery({
+    queryKey: ["collections"],
+    queryFn: () => collectionService.getAllCollections(),
+  });
 
   // Filter + search cards
   const filteredCards = useMemo(() => {
@@ -49,8 +58,9 @@ function CardTable({ data, onDelete, onEdit }) {
         <Selector
           value={filterCollection}
           onValueChange={setFilterCollection}
-          list={["all", "common", "daily conversation daily"]}
+          list={collections}
           placeholder="Collection"
+          property={"name"}
           triggerClassName="w-48"
         />
 
@@ -68,6 +78,7 @@ function CardTable({ data, onDelete, onEdit }) {
           <TableHeader>
             <TableRow className="bg-gray-100 dark:bg-stone-950 sticky top-0 z-10">
               <TableHead className="px-4 py-2">ID</TableHead>
+              <TableHead className="px-4 py-2">Thumbnail</TableHead>
               <TableHead className="px-4 py-2">EN Word</TableHead>
               <TableHead className="px-4 py-2">VN Word</TableHead>
               <TableHead className="px-4 py-2">Type</TableHead>
@@ -81,6 +92,13 @@ function CardTable({ data, onDelete, onEdit }) {
             {filteredCards.map((card) => (
               <TableRow key={card.id}>
                 <TableCell className="px-4 py-2">{card.id}</TableCell>
+                <TableCell className="px-4 py-2">
+                  <ImageWithFallback
+                    src={card.image_url}
+                    alt={card.en_word}
+                    className="w-8 h-8  dark:bg-white border-1"
+                  />
+                </TableCell>
                 <TableCell className="px-4 py-2">{card.en_word}</TableCell>
                 <TableCell className="px-4 py-2 max-w-[200px] overflow-hidden whitespace-nowrap truncate">
                   {card.vn_word}

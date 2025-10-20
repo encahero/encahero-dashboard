@@ -9,11 +9,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import CardCreation from "@/components/card-creation";
 import { cardsService } from "@/services";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { convertCardFormData } from "@/helpers";
 
 export default function Cards() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editCard, setEditCard] = useState(null);
   const queryClient = useQueryClient();
+
   const {
     data: cards = [],
     isLoading,
@@ -25,12 +27,15 @@ export default function Cards() {
 
   const saveMutation = useMutation({
     mutationFn: (data) => {
+      const formData = convertCardFormData(data);
       if (editCard) {
-        return cardsService.updateCard(editCard.id, data);
+        console.log(editCard);
+        return cardsService.updateCard(editCard.id, formData);
       } else {
-        return cardsService.createCard(data);
+        return cardsService.createCard(formData);
       }
     },
+
     onSuccess: () => {
       queryClient.invalidateQueries(["cards"]);
       setModalOpen(false);
@@ -38,38 +43,17 @@ export default function Cards() {
     },
   });
 
+  const handleSave = (data) => {
+    // Gọi mutation
+    saveMutation.mutate(data);
+  };
+
   const deleteMutation = useMutation({
     mutationFn: (id) => cardsService.deleteCard(id),
     onSuccess: () => {
       queryClient.invalidateQueries(["cards"]);
     },
   });
-
-  const handleSave = (data) => {
-    const newCard = {
-      id: editCard ? editCard.id : cards.length + 1,
-      en_word: data.en_word,
-      vn_word: data.vn_word,
-      vn_choice: data.vn_choice || [data.vn_word],
-      en_choice: data.en_choice || [data.en_word],
-      meaning: data.meaning,
-      ex: data.ex || [], // ex là array từ form
-      image_url: data.image_url,
-      type: data.type,
-      created_at: editCard ? editCard.created_at : new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      collectionName: data.collectionName,
-    };
-
-    if (editCard) {
-      setCards((prev) => prev.map((c) => (c.id === editCard.id ? newCard : c)));
-    } else {
-      setCards((prev) => [...prev, newCard]);
-    }
-
-    setModalOpen(false);
-    setEditCard(null);
-  };
 
   const handleEdit = (card) => {
     setEditCard(card);
