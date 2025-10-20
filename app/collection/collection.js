@@ -1,18 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
-import { categoryService, collectionService } from "@/services";
+import { collectionService } from "@/services";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import CollectionTable from "@/components/colelction-table";
 import CollectionCreation from "@/components/collection-creation";
+import { useToast } from "@/hooks/use-toast";
+import getErrorMessage from "@/utils/get-error-message";
 
 export default function Collection() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editCollection, setEditCollection] = useState(null);
-
+  const { showErrorToast, showSuccessToast } = useToast();
   const queryClient = useQueryClient();
 
   const { data: collections = [] } = useQuery({
@@ -26,8 +28,9 @@ export default function Collection() {
     onSuccess: () => {
       queryClient.invalidateQueries(["collections"]);
       setModalOpen(false);
+      showSuccessToast("Success", "Create collection successfully");
     },
-    onError: (err) => alert(err.message),
+    onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
   });
 
   const { mutate: updateCol } = useMutation({
@@ -36,14 +39,18 @@ export default function Collection() {
     onSuccess: () => {
       queryClient.invalidateQueries(["collections"]);
       setModalOpen(false);
+      showSuccessToast("Success", "Update collection successfully");
     },
-    onError: (err) => alert(err.message),
+    onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
   });
 
   const { mutate: deleteCol } = useMutation({
     mutationFn: (id) => collectionService.deleteCollection(id),
-    onSuccess: () => queryClient.invalidateQueries(["collections"]),
-    onError: (err) => alert(err.message),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["collections"]);
+      showSuccessToast("Success", "Delete collection successfully");
+    },
+    onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
   });
 
   const handleEdit = (col) => {

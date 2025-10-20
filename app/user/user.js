@@ -7,8 +7,11 @@ import UserGrowChart from "@/components/user-grow-chart";
 import UserTable from "@/components/user-table";
 import { userService } from "@/services";
 import { useQuery } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
+import getErrorMessage from "@/utils/get-error-message";
 
 export default function UserPage() {
+  const { showErrorToast } = useToast();
   const {
     data: users = [],
     isLoading,
@@ -21,6 +24,7 @@ export default function UserPage() {
   const { data: usersGrowth = [] } = useQuery({
     queryKey: ["users-growth"],
     queryFn: () => userService.getUsersGrowth(),
+    onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
   });
 
   const totalUsers = usersGrowth?.totalUsers ?? 0;

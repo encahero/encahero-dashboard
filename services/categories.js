@@ -5,7 +5,7 @@ export const getAllCategories = async () => {
     const res = await instance.get("/categories");
     return res.data;
   } catch (error) {
-    throw new Error(error);
+    throw new error();
   }
 };
 
@@ -14,7 +14,7 @@ export const createCategory = async (name) => {
     const res = await instance.post("/categories", { name });
     return res.data;
   } catch (error) {
-    throw new Error(error);
+    throw error;
   }
 };
 
@@ -23,7 +23,7 @@ export const deleteCategory = async (id) => {
     const res = await instance.delete(`/categories/${id}`);
     return res.data;
   } catch (error) {
-    throw new Error(error || "Delete category failed");
+    throw error;
   }
 };
 
@@ -32,6 +32,6 @@ export const updateCategory = async (id, name) => {
     const res = await instance.patch(`/categories/${id}`, { name });
     return res.data;
   } catch (error) {
-    throw new Error(error || "Delete category failed");
+    throw error;
   }
 };

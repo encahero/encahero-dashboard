@@ -5,6 +5,6 @@ export const getAllFeedBack = async () => {
     const res = await instance.get("/feedback");
     return res.data;
   } catch (error) {
-    throw new Error(error);
+    throw error;
   }
 };

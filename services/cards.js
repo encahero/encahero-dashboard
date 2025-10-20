@@ -5,7 +5,7 @@ export const getAllCards = async () => {
     const res = await instance.get("/cards");
     return res.data;
   } catch (error) {
-    throw new Error(error);
+    throw error;
   }
 };
 
@@ -14,7 +14,7 @@ export const createCard = async (formData) => {
     const res = await instance.post("/cards", formData);
     return res.data;
   } catch (error) {
-    throw new Error(error);
+    throw error;
   }
 };
 
@@ -23,7 +23,7 @@ export const updateCard = async (id, formData) => {
     const res = await instance.patch(`/cards/${id}`, formData);
     return res.data;
   } catch (error) {
-    throw new Error(error);
+    throw error;
   }
 };
 
@@ -32,6 +32,6 @@ export const deleteCard = async (id) => {
     const res = await instance.delete(`/cards/${id}`);
     return res.data;
   } catch (error) {
-    throw new Error(error);
+    throw error;
   }
 };

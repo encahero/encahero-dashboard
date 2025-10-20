@@ -17,6 +17,8 @@ import getNameOfUser from "@/utils/get-name-of-user";
 import { feedbackService } from "@/services";
 import { useQuery } from "@tanstack/react-query";
 import PreviewImage from "@/components/preview-image";
+import { useToast } from "@/hooks/use-toast";
+import getErrorMessage from "@/utils/get-error-message";
 
 const FeedBackItem = ({ user, text, images, createdAt, onClickImage }) => {
   return (
@@ -63,7 +65,7 @@ const FeedBackItem = ({ user, text, images, createdAt, onClickImage }) => {
 
 export default function Feedback() {
   const [previewImage, setPreviewImage] = useState(null);
-
+  const { showErrorToast } = useToast();
   const {
     data: feedbacks = [],
     isLoading,
@@ -71,6 +73,7 @@ export default function Feedback() {
   } = useQuery({
     queryKey: ["feedbacks"],
     queryFn: () => feedbackService.getAllFeedBack(),
+    onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
   });
 
   return (

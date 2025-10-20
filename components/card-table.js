@@ -15,15 +15,18 @@ import Selector from "./selector";
 import { useQuery } from "@tanstack/react-query";
 import { collectionService } from "@/services";
 import ImageWithFallback from "./image-with-fallback";
+import { useToast } from "@/hooks/use-toast";
+import getErrorMessage from "@/utils/get-error-message";
 
 function CardTable({ data, onDelete, onEdit }) {
   const [search, setSearch] = useState("");
   const [filterCollection, setFilterCollection] = useState("");
   const [filterType, setFilterType] = useState("");
-
+  const { showErrorToast } = useToast();
   const { data: collections = [] } = useQuery({
     queryKey: ["collections"],
     queryFn: () => collectionService.getAllCollections(),
+    onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
   });
 
   // Filter + search cards

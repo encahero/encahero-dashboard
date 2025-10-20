@@ -8,27 +8,31 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { categoryService } from "@/services";
 import CategoryTable from "@/components/category-table";
 import CategoryCreation from "@/components/category-creation";
+import { useToast } from "@/hooks/use-toast";
+import getErrorMessage from "@/utils/get-error-message";
 
 export default function Category() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editCategory, setEditCategory] = useState(null);
   const queryClient = useQueryClient();
-
+  const { showErrorToast, showSuccessToast } = useToast();
   const { mutate: createCat } = useMutation({
     mutationFn: (name) => categoryService.createCategory(name),
     onSuccess: () => {
       queryClient.invalidateQueries(["category"]); // reload list
       setModalOpen(false);
+      showSuccessToast("Success", "Create category successfully");
     },
-    onError: (err) => alert(err.message),
+    onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
   });
 
   const { mutate: deleteCat } = useMutation({
     mutationFn: (id) => categoryService.deleteCategory(id),
     onSuccess: () => {
       queryClient.invalidateQueries(["category"]); // reload list
+      showSuccessToast("Success", "Delete category successfully");
     },
-    onError: (err) => alert(err.message),
+    onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
   });
 
   const { mutate: updateCat } = useMutation({
@@ -37,8 +41,9 @@ export default function Category() {
       queryClient.invalidateQueries(["category"]);
       setModalOpen(false);
       setEditCategory(null);
+      showSuccessToast("Success", "Update category successfully");
     },
-    onError: (err) => alert(err.message),
+    onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
   });
 
   const {
@@ -48,6 +53,7 @@ export default function Category() {
   } = useQuery({
     queryKey: ["category"],
     queryFn: () => categoryService.getAllCategories(),
+    onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
   });
 
   const handleSave = (categoryName) => {

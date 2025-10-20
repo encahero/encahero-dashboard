@@ -4,7 +4,7 @@ import { AuthProvider } from "@/context/auth";
 import DefaultLayout from "./layout/default-layout";
 import { ThemeProvider } from "@/context/theme";
 import QueryProvider from "@/context/query-client";
-
+import { ToastContainer } from "react-toastify";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -30,6 +30,7 @@ export default function RootLayout({ children }) {
           <ThemeProvider>
             <AuthProvider>
               <DefaultLayout>{children}</DefaultLayout>
+              <ToastContainer />
             </AuthProvider>
           </ThemeProvider>
         </QueryProvider>

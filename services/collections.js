@@ -5,7 +5,7 @@ export const getAllCollections = async () => {
     const res = await instance.get("/collections");
     return res.data;
   } catch (error) {
-    throw new Error(error);
+    throw error;
   }
 };
 
@@ -14,7 +14,7 @@ export const createCollection = async (name, categoryName) => {
     const res = await instance.post("/collections", { name, categoryName });
     return res.data;
   } catch (error) {
-    throw new Error(error);
+    throw error;
   }
 };
 
@@ -26,7 +26,7 @@ export const updateCollection = async (id, name, categoryName) => {
     });
     return res.data;
   } catch (error) {
-    throw new Error(error);
+    throw error;
   }
 };
 
@@ -35,6 +35,6 @@ export const deleteCollection = async (id) => {
     const res = await instance.delete(`/collections/${id}`);
     return res.data;
   } catch (error) {
-    throw new Error(error);
+    throw error;
   }
 };

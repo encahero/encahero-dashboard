@@ -5,7 +5,7 @@ export const getAllUsers = async () => {
     const res = await instance.get("/users");
     return res.data;
   } catch (error) {
-    throw new Error(error);
+    throw error;
   }
 };
 
@@ -14,6 +14,6 @@ export const getUsersGrowth = async () => {
     const res = await instance.get("/users/growth");
     return res.data;
   } catch (error) {
-    throw new Error(error);
+    throw error;
   }
 };

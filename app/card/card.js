@@ -10,11 +10,14 @@ import CardCreation from "@/components/card-creation";
 import { cardsService } from "@/services";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { convertCardFormData } from "@/helpers";
+import { useToast } from "@/hooks/use-toast";
+import getErrorMessage from "@/utils/get-error-message";
 
 export default function Cards() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editCard, setEditCard] = useState(null);
   const queryClient = useQueryClient();
+  const { showErrorToast, showSuccessToast } = useToast();
 
   const {
     data: cards = [],
@@ -39,7 +42,12 @@ export default function Cards() {
       queryClient.invalidateQueries(["cards"]);
       setModalOpen(false);
       setEditCard(null);
+      showSuccessToast(
+        "Success",
+        editCard ? "Update card successfully" : "Create card successfully"
+      );
     },
+    onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
   });
 
   const handleSave = (data) => {
@@ -51,7 +59,9 @@ export default function Cards() {
     mutationFn: (id) => cardsService.deleteCard(id),
     onSuccess: () => {
       queryClient.invalidateQueries(["cards"]);
+      showSuccessToast("Success", "Delete card successfully");
     },
+    onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
   });
 
   const handleEdit = (card) => {
@@ -76,7 +86,7 @@ export default function Cards() {
           <Button onClick={() => setModalOpen(true)}>New Card</Button>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto flex-1">
           <CardTable
             data={cards}
             onDelete={handleDelete}
