@@ -65,9 +65,9 @@ export default function Category() {
 
     try {
       if (editCategory) {
-        updateCat({ id: editCategory.id, name: categoryName });
+        await updateCat({ id: editCategory.id, name: categoryName });
       } else {
-        createCat(categoryName);
+        await createCat(categoryName);
       }
     } catch (err) {
       throw err;

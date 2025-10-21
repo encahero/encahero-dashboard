@@ -1,4 +1,5 @@
 "use client";
+import { CpuIcon } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -11,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 import { Button } from "./ui/button";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { Textarea } from "./ui/textarea";
 import { PlusIcon, Trash2Icon } from "lucide-react";
@@ -38,11 +39,12 @@ const defaultValues = {
 function CardCreation({ isOpen, onClose, isEdit, onSubmit, editValues }) {
   const [imageType, setImageType] = useState("url");
   const [preview, setPreview] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
   const { register, handleSubmit, reset, control, watch, setValue } = useForm({
     defaultValues: editValues || defaultValues,
   });
 
-  const { showErrorToast } = useToast();
+  const { showErrorToast, showSuccessToast } = useToast();
 
   const imageUrl = watch("image_url");
 
@@ -63,6 +65,7 @@ function CardCreation({ isOpen, onClose, isEdit, onSubmit, editValues }) {
     control,
     name: "ex",
   });
+
   useEffect(() => {
     reset(editValues || {});
     if (editValues?.image_url) setPreview(editValues.image_url);
@@ -85,6 +88,7 @@ function CardCreation({ isOpen, onClose, isEdit, onSubmit, editValues }) {
     setImageType("url");
     setPreview(null);
     reset(defaultValues);
+    currentEntryIndex.current = 0;
   };
 
   const handleFileUpload = (e) => {
@@ -101,7 +105,51 @@ function CardCreation({ isOpen, onClose, isEdit, onSubmit, editValues }) {
     setPreview(null);
     setImageType("url");
     onClose();
+    currentEntryIndex.current = 0;
   };
+
+  const handleFill = async (e) => {
+    e?.preventDefault?.();
+
+    const word = watch("en_word")?.trim();
+
+    if (!word) {
+      showErrorToast("Ops!", "Please enter an English word first.");
+      return;
+    }
+    setIsGenerating(true);
+    try {
+      // Call your Next.js App Router API route
+      const res = await fetch("/api/generate-card", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ word }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`Server returned ${res.status}`);
+      }
+
+      const data = await res.json();
+      const card = JSON.parse(data.choices[0].message.content);
+
+      // Fill your form fields
+      setValue("vn_word", card.vn_word || "");
+      setValue("meaning", card.meaning || "");
+      setValue("type", card.type || "");
+      setValue("ex", card.ex && card.ex.length ? card.ex : [""]);
+      setValue("en_choice", card.en_choice || "");
+      setValue("vn_choice", card.vn_choice || "");
+      setValue("collectionId", card.collectionId || "");
+
+      showSuccessToast("Success!", "Flashcard generated successfully!");
+    } catch (err) {
+      showErrorToast("Ops!", getErrorMessage(err));
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent
@@ -128,7 +176,28 @@ function CardCreation({ isOpen, onClose, isEdit, onSubmit, editValues }) {
           <div className="grid gap-4 py-4">
             <div className="grid gap-1">
               <label className="text-sm font-medium">EN Word</label>
-              <Input placeholder="EN Word" {...register("en_word")} />
+              <div className="flex gap-2 items-center">
+                <Input
+                  placeholder="EN Word"
+                  {...register("en_word")}
+                  className="flex-1"
+                />
+                <Button
+                  type="button"
+                  onClick={handleFill}
+                  disabled={isGenerating}
+                  className="flex items-center gap-2"
+                >
+                  {isGenerating ? (
+                    <>
+                      <CpuIcon className="animate-spin w-4 h-4" />
+                      {"Generating..."}
+                    </>
+                  ) : (
+                    "Fill with AI"
+                  )}
+                </Button>
+              </div>
             </div>
 
             <div className="grid gap-1">
