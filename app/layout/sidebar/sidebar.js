@@ -3,33 +3,36 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { BookText, Users, Layers, Folder, MessageSquare } from "lucide-react";
 
 export default function SideBar() {
-  const pathname = usePathname(); // Lấy đường dẫn hiện tại để highlight active menu
+  const pathname = usePathname();
 
   const menuItems = [
-    { name: "Category", href: "/category" },
-    { name: "Collection", href: "/collection" },
-    { name: "Card", href: "/card" },
-    { name: "User", href: "/user" },
-    { name: "Feedback", href: "/feedback" },
+    { name: "Card", href: "/card", icon: BookText },
+    { name: "User", href: "/user", icon: Users },
+    { name: "Category", href: "/category", icon: Layers },
+    { name: "Collection", href: "/collection", icon: Folder },
+    { name: "Feedback", href: "/feedback", icon: MessageSquare },
   ];
 
   return (
     <nav className="flex flex-col space-y-2 h-screen p-2 mt-12">
       {menuItems.map((item) => {
         const isActive = pathname === item.href;
+        const Icon = item.icon;
         return (
           <Link key={item.name} href={item.href}>
             <Button
-              variant="ghost" // luôn dùng ghost, còn màu chỉnh bằng class
-              className={`w-full text-left cursor-pointer rounded-md ${
+              variant="ghost"
+              className={`w-full text-left justify-start gap-2 rounded-md ${
                 isActive
                   ? "bg-blue-500 text-white dark:bg-blue-600"
                   : "text-gray-900 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700"
               }`}
             >
-              {item.name}
+              <Icon size={18} />
+              <span>{item.name}</span>
             </Button>
           </Link>
         );

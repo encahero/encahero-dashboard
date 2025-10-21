@@ -18,9 +18,10 @@ function CategoryCreation({ isOpen, onClose, editData, onSubmit }) {
       setName(editData.name);
     }
   }, [editData]);
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (!name.trim()) return;
+    await onSubmit(name);
     setName("");
-    onSubmit(name);
   };
 
   const handleClose = () => {
@@ -50,7 +51,7 @@ function CategoryCreation({ isOpen, onClose, editData, onSubmit }) {
         </div>
 
         <DialogFooter>
-          <Button onClick={handleSubmit}>
+          <Button onClick={handleSubmit} disabled={!name.trim()}>
             {!!editData ? "Update" : "Create"}
           </Button>
         </DialogFooter>

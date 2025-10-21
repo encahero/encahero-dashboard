@@ -27,11 +27,7 @@ function CollectionCreation({ isOpen, onClose, editData, onSubmit }) {
     }
   }, [editData]);
 
-  const {
-    data: categories = [],
-    isLoading,
-    isError,
-  } = useQuery({
+  const { data: categories = [] } = useQuery({
     queryKey: ["category"],
     queryFn: () => categoryService.getAllCategories(),
     onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
@@ -43,10 +39,11 @@ function CollectionCreation({ isOpen, onClose, editData, onSubmit }) {
     onClose();
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (!name.trim() || !categoryName.trim()) return;
+    await onSubmit({ name, categoryName });
     setName("");
     setCategoryName("");
-    onSubmit({ name, categoryName });
   };
 
   return (
@@ -81,7 +78,10 @@ function CollectionCreation({ isOpen, onClose, editData, onSubmit }) {
         </div>
 
         <DialogFooter>
-          <Button onClick={handleSubmit}>
+          <Button
+            onClick={handleSubmit}
+            disabled={!name.trim() || !categoryName.trim()}
+          >
             {editData ? "Update" : "Create"}
           </Button>
         </DialogFooter>

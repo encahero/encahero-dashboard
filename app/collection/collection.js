@@ -22,7 +22,7 @@ export default function Collection() {
     queryFn: () => collectionService.getAllCollections(),
   });
 
-  const { mutate: createCol } = useMutation({
+  const { mutateAsync: createCol } = useMutation({
     mutationFn: ({ name, categoryName }) =>
       collectionService.createCollection(name, categoryName),
     onSuccess: () => {
@@ -33,7 +33,7 @@ export default function Collection() {
     onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
   });
 
-  const { mutate: updateCol } = useMutation({
+  const { mutateAsync: updateCol } = useMutation({
     mutationFn: ({ id, name, categoryName }) =>
       collectionService.updateCollection(id, name, categoryName),
     onSuccess: () => {
@@ -58,13 +58,16 @@ export default function Collection() {
     setModalOpen(true);
   };
 
-  const handleSave = ({ name, categoryName }) => {
+  const handleSave = async ({ name, categoryName }) => {
     if (!name) return;
-
-    if (editCollection) {
-      updateCol({ id: editCollection.id, name, categoryName });
-    } else {
-      createCol({ name, categoryName });
+    try {
+      if (editCollection) {
+        await updateCol({ id: editCollection.id, name, categoryName });
+      } else {
+        await createCol({ name, categoryName });
+      }
+    } catch (err) {
+      throw err;
     }
   };
 

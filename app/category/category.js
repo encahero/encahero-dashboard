@@ -16,7 +16,7 @@ export default function Category() {
   const [editCategory, setEditCategory] = useState(null);
   const queryClient = useQueryClient();
   const { showErrorToast, showSuccessToast } = useToast();
-  const { mutate: createCat } = useMutation({
+  const { mutateAsync: createCat } = useMutation({
     mutationFn: (name) => categoryService.createCategory(name),
     onSuccess: () => {
       queryClient.invalidateQueries(["category"]); // reload list
@@ -35,7 +35,7 @@ export default function Category() {
     onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
   });
 
-  const { mutate: updateCat } = useMutation({
+  const { mutateAsync: updateCat } = useMutation({
     mutationFn: ({ id, name }) => categoryService.updateCategory(id, name),
     onSuccess: () => {
       queryClient.invalidateQueries(["category"]);
@@ -46,22 +46,23 @@ export default function Category() {
     onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
   });
 
-  const {
-    data: categories = [],
-    isLoading,
-    isError,
-  } = useQuery({
+  const { data: categories = [] } = useQuery({
     queryKey: ["category"],
     queryFn: () => categoryService.getAllCategories(),
     onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
   });
 
-  const handleSave = (categoryName) => {
+  const handleSave = async (categoryName) => {
     if (!categoryName) return;
-    if (editCategory) {
-      updateCat({ id: editCategory.id, name: categoryName });
-    } else {
-      createCat(categoryName);
+
+    try {
+      if (editCategory) {
+        updateCat({ id: editCategory.id, name: categoryName });
+      } else {
+        createCat(categoryName);
+      }
+    } catch (err) {
+      throw err;
     }
   };
 

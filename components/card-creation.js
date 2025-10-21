@@ -18,7 +18,19 @@ import Selector from "./selector";
 import { useQuery } from "@tanstack/react-query";
 import { collectionService } from "@/services";
 
-function CardCreation({ isOpen, onClose, isEdit, onSubmit, defaultValues }) {
+const defaultValues = {
+  en_word: "",
+  vn_word: "",
+  type: "",
+  meaning: "",
+  ex: [""],
+  en_choice: "",
+  vn_choice: "",
+  image_url: "",
+  collectionId: "",
+};
+
+function CardCreation({ isOpen, onClose, isEdit, onSubmit, editValues }) {
   const { data: collections = [] } = useQuery({
     queryKey: ["collections"],
     queryFn: () => collectionService.getAllCollections(),
@@ -26,17 +38,7 @@ function CardCreation({ isOpen, onClose, isEdit, onSubmit, defaultValues }) {
 
   const [imageType, setImageType] = useState("url");
   const { register, handleSubmit, reset, control } = useForm({
-    defaultValues: defaultValues || {
-      en_word: "",
-      vn_word: "",
-      type: "",
-      meaning: "",
-      ex: [""],
-      en_choice: "",
-      vn_choice: "",
-      image_url: "",
-      collectionId: "",
-    },
+    defaultValues: editValues || defaultValues,
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -44,28 +46,18 @@ function CardCreation({ isOpen, onClose, isEdit, onSubmit, defaultValues }) {
     name: "ex",
   });
   useEffect(() => {
-    reset(defaultValues || {});
-  }, [defaultValues, reset]);
+    reset(editValues || {});
+  }, [editValues, reset]);
 
-  const handleFormSubmit = (data) => {
-    onSubmit(data);
-    reset();
+  const handleFormSubmit = async (data) => {
+    await onSubmit(data);
     setImageType("url");
+    reset(defaultValues);
   };
 
   const handleFileUpload = () => {};
   const handleClose = () => {
-    reset({
-      en_word: "",
-      vn_word: "",
-      type: "",
-      meaning: "",
-      ex: [""],
-      en_choice: "",
-      vn_choice: "",
-      image_url: "",
-      collectionId: "",
-    });
+    reset(defaultValues);
     onClose();
   };
   return (

@@ -50,9 +50,13 @@ export default function Cards() {
     onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
   });
 
-  const handleSave = (data) => {
+  const handleSave = async (data) => {
     // Gọi mutation
-    saveMutation.mutate(data);
+    try {
+      await saveMutation.mutateAsync(data);
+    } catch (error) {
+      throw error;
+    }
   };
 
   const deleteMutation = useMutation({
@@ -99,7 +103,7 @@ export default function Cards() {
           isOpen={modalOpen}
           onClose={handleClose}
           isEdit={!!editCard}
-          defaultValues={editCard}
+          editValues={editCard}
           onSubmit={handleSave}
         />
       </div>
