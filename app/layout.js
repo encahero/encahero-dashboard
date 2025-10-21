@@ -2,7 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/context/auth";
 import DefaultLayout from "./layout/default-layout";
-import { ThemeProvider } from "@/context/theme";
+import { CustomThemeProvider } from "@/context/theme";
 import QueryProvider from "@/context/query-client";
 import { ToastContainer } from "react-toastify";
 const geistSans = Geist({
@@ -22,17 +22,17 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <QueryProvider>
-          <ThemeProvider>
+          <CustomThemeProvider>
             <AuthProvider>
               <DefaultLayout>{children}</DefaultLayout>
               <ToastContainer />
             </AuthProvider>
-          </ThemeProvider>
+          </CustomThemeProvider>
         </QueryProvider>
       </body>
     </html>

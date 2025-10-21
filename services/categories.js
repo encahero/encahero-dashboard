@@ -5,7 +5,7 @@ export const getAllCategories = async () => {
     const res = await instance.get("/categories");
     return res.data;
   } catch (error) {
-    throw new error();
+    throw error;
   }
 };
 

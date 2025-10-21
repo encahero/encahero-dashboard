@@ -1,26 +1,66 @@
-import { useState } from "react";
-import images from "@/assets/images";
+import React, { useState, useEffect } from "react";
 import getImageUrl from "@/utils/get-image-url";
+import images from "@/assets/images";
 
-export default function ImageWithFallback({
+const isValidUrl = (url) => {
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+const ImageWithFallback = ({
   src,
-  alt,
+  alt = "image",
+  className = "",
+  fallbackImg = images.fallbackImg,
   folderName = "feedback",
-  ...props
-}) {
-  const [imgSrc, setImgSrc] = useState(getImageUrl(src, folderName));
+  style,
+  ...rest
+}) => {
+  const [imgSrc, setImgSrc] = useState(getImageUrl(src));
+  const [status, setStatus] = useState("loading"); // "loading" | "loaded" | "error"
 
+  useEffect(() => {
+    const validate = async () => {
+      const finalSrc = getImageUrl(src);
+      const isValid = isValidUrl(finalSrc);
+      if (isValid) {
+        setImgSrc(finalSrc);
+        setStatus("loading");
+      } else {
+        setImgSrc(fallbackImg);
+        setStatus("loaded");
+      }
+    };
+    validate();
+  }, [src, folderName, fallbackImg]);
+
+  const handleLoad = () => setStatus("loaded");
   const handleError = () => {
-    setImgSrc(images.fallbackImg);
+    setStatus("error");
+    setImgSrc(fallbackImg);
   };
 
   return (
-    <img
-      src={imgSrc}
-      alt={alt}
-      onError={handleError}
-      className="w-8 h-8 rounded-full dark:bg-white border-1"
-      {...props}
-    />
+    <div className={`relative overflow-hidden ${className}`} style={style}>
+      {status === "loading" && (
+        <div className="animate-pulse bg-gray-200 dark:bg-gray-700 w-full h-full" />
+      )}
+      <img
+        src={imgSrc}
+        alt={status === "error" ? "Error" : alt}
+        onLoad={handleLoad}
+        onError={handleError}
+        className={`object-contain w-full h-full transition-opacity duration-300 ${
+          status === "loaded" ? "opacity-100" : "opacity-0"
+        }`}
+        {...rest}
+      />
+    </div>
   );
-}
+};
+
+export default ImageWithFallback;

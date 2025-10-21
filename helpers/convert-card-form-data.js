@@ -1,6 +1,8 @@
 export default function convertCardFormData(data) {
   const formData = new FormData();
 
+  console.log({ data });
+
   formData.append("en_word", data.en_word);
   formData.append("vn_word", data.vn_word);
   formData.append("meaning", data.meaning);
@@ -22,7 +24,7 @@ export default function convertCardFormData(data) {
 
   formData.append("collectionId", String(data.collectionId));
 
-  if (data.image_file) {
+  if (data.image_file instanceof File) {
     formData.append("image_file", data.image_file); // data.image_file là File object
   } else if (data.image_url) {
     formData.append("image_url", data.image_url);

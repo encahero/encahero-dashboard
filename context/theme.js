@@ -1,44 +1,12 @@
 // app/context/ThemeContext.tsx
 "use client";
 
-import { createContext, useContext, useState, useEffect } from "react";
+import { ThemeProvider } from "next-themes";
 
-const ThemeContext = createContext(undefined);
-
-export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState("light");
-
-  // Khi mount, lấy theme từ localStorage hoặc system
-  useEffect(() => {
-    const storedTheme = localStorage.getItem("theme");
-    if (storedTheme) {
-      setTheme(storedTheme);
-      document.documentElement.classList.toggle("dark", storedTheme === "dark");
-    } else {
-      const prefersDark = window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      ).matches;
-      setTheme(prefersDark ? "dark" : "light");
-      document.documentElement.classList.toggle("dark", prefersDark);
-    }
-  }, []);
-
-  const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
-    document.documentElement.classList.toggle("dark", newTheme === "dark");
-  };
-
+export const CustomThemeProvider = ({ children }) => {
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem={true}>
       {children}
-    </ThemeContext.Provider>
+    </ThemeProvider>
   );
-};
-
-export const useTheme = () => {
-  const context = useContext(ThemeContext);
-  if (!context) throw new Error("useTheme must be used within ThemeProvider");
-  return context;
 };

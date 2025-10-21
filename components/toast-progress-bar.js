@@ -11,22 +11,23 @@ export default function ToastProgressBar({
 }) {
   const [value, setValue] = useState(0);
 
+  // tăng value
   useEffect(() => {
     if (isPaused) return;
 
     const interval = setInterval(() => {
-      setValue((prev) => {
-        const next = prev + 100 / (duration / 100); // tăng mỗi 100ms
-        if (next >= 100) {
-          clearInterval(interval);
-          onAnimationEnd?.();
-        }
-        return next;
-      });
+      setValue((prev) => Math.min(prev + 100 / (duration / 100), 100));
     }, 100);
 
     return () => clearInterval(interval);
-  }, [isPaused, duration, onAnimationEnd]);
+  }, [isPaused, duration]);
+
+  // gọi onAnimationEnd khi value đạt 100
+  useEffect(() => {
+    if (value >= 100) {
+      onAnimationEnd?.();
+    }
+  }, [value, onAnimationEnd]);
 
   return <Progress value={value} className="h-1 rounded-full" />;
 }

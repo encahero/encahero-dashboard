@@ -2,12 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/auth";
-import { useTheme } from "@/context/theme";
+import { useTheme } from "@/hooks/use-theme";
+
 import Link from "next/link";
 
 export default function Header() {
   const { logout } = useAuth();
-  const { theme, toggleTheme } = useTheme();
+  const { toggleTheme, resolvedTheme } = useTheme();
 
   const handleAuth = () => {
     logout();
@@ -25,7 +26,7 @@ export default function Header() {
       {/* Controls */}
       <div className="flex items-center space-x-4">
         <Button size="sm" onClick={toggleTheme}>
-          {theme === "light" ? "🌙 Dark" : "☀️ Light"}
+          {resolvedTheme === "light" ? "🌙 Dark" : "☀️ Light"}
         </Button>
         <Button
           size="sm"

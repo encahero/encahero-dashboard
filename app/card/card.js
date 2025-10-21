@@ -25,7 +25,15 @@ export default function Cards() {
     isError,
   } = useQuery({
     queryKey: ["cards"],
-    queryFn: () => cardsService.getAllCards(),
+    queryFn: async () => {
+      try {
+        const res = await cardsService.getAllCards();
+        return res;
+      } catch (error) {
+        showErrorToast("Ops", getErrorMessage(err));
+        return [];
+      }
+    },
   });
 
   const saveMutation = useMutation({

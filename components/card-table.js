@@ -25,8 +25,15 @@ function CardTable({ data, onDelete, onEdit }) {
   const { showErrorToast } = useToast();
   const { data: collections = [] } = useQuery({
     queryKey: ["collections"],
-    queryFn: () => collectionService.getAllCollections(),
-    onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
+    queryFn: async () => {
+      try {
+        const res = await collectionService.getAllCollections();
+        return res;
+      } catch (err) {
+        showErrorToast("Ops!", getErrorMessage(err));
+        return [];
+      }
+    },
   });
 
   // Filter + search cards

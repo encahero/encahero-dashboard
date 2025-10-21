@@ -13,8 +13,9 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { categoryService } from "@/services";
-import getErrorMessage from "@/utils/get-error-message";
+
 import { useToast } from "@/hooks/use-toast";
+import getErrorMessage from "@/utils/get-error-message";
 
 function CollectionCreation({ isOpen, onClose, editData, onSubmit }) {
   const [name, setName] = useState("");
@@ -29,8 +30,15 @@ function CollectionCreation({ isOpen, onClose, editData, onSubmit }) {
 
   const { data: categories = [] } = useQuery({
     queryKey: ["category"],
-    queryFn: () => categoryService.getAllCategories(),
-    onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
+    queryFn: async () => {
+      try {
+        const res = await categoryService.getAllCategories();
+        return res;
+      } catch (err) {
+        showErrorToast("Ops!", getErrorMessage(err));
+        return [];
+      }
+    },
   });
 
   const handleClose = () => {

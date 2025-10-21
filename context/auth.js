@@ -1,16 +1,47 @@
-// app/context/AuthContext.tsx
 "use client";
+import { createContext, useContext, useState, useEffect } from "react";
+import { storage } from "@/utils";
+
 const AuthContext = createContext();
-import { createContext, useContext, useState } from "react";
 
 export const AuthProvider = ({ children }) => {
-  const [loggedIn, setLoggedIn] = useState(true);
+  const [loggedIn, setLoggedIn] = useState(null);
+  const [user, setUser] = useState(null);
 
-  const login = () => setLoggedIn(true);
-  const logout = () => setLoggedIn(false);
+  useEffect(() => {
+    const loadAuth = async () => {
+      const storedUser = await storage.getUser();
+      const accessToken = await storage.getAccessToken();
+      if (storedUser && accessToken) {
+        setUser(storedUser);
+        setLoggedIn(true);
+      } else {
+        setUser(null);
+        setLoggedIn(false);
+      }
+    };
+    loadAuth();
+  }, []);
+
+  const login = async (accessToken, refreshToken, userData) => {
+    await storage.setAccessToken(accessToken);
+    await storage.setRefreshToken(refreshToken);
+    await storage.setUser(userData);
+
+    setUser(userData);
+    setLoggedIn(true);
+  };
+
+  const logout = async () => {
+    await storage.clearAllTokens();
+    await storage.clearUser();
+
+    setUser(null);
+    setLoggedIn(false);
+  };
 
   return (
-    <AuthContext.Provider value={{ loggedIn, login, logout }}>
+    <AuthContext.Provider value={{ loggedIn, user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

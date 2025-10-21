@@ -61,12 +61,3 @@ export async function clearAllTokens() {
   await clearAccessToken();
   await clearRefreshToken();
 }
-
-// ================= THEME =================
-export async function getTheme() {
-  return localStorage.getItem("theme");
-}
-
-export async function setTheme(value) {
-  localStorage.setItem("theme", value);
-}

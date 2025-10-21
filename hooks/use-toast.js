@@ -1,7 +1,9 @@
 // hooks/useToast.ts
 import CustomToast from "@/components/custom-toast";
-import { useTheme } from "@/context/theme";
+
+import getErrorMessage from "@/utils/get-error-message";
 import { toast } from "react-toastify";
+import { useTheme } from "./use-theme";
 
 const toastConfig = {
   autoClose: false,
@@ -17,19 +19,20 @@ const toastConfig = {
 };
 
 export function useToast() {
-  const { theme } = useTheme();
+  const { resolvedTheme: theme } = useTheme();
   return {
-    showSuccessToast: (title, content) =>
-      toast(CustomToast, {
+    showSuccessToast: (title, content) => {
+      return toast(CustomToast, {
         data: {
           type: "success",
           title,
-          content,
+          content: content,
         },
 
         ...toastConfig,
         theme,
-      }),
+      });
+    },
 
     showErrorToast: (title, content) =>
       toast(CustomToast, {

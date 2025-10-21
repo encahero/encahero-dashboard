@@ -15,6 +15,7 @@ export default function Category() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editCategory, setEditCategory] = useState(null);
   const queryClient = useQueryClient();
+
   const { showErrorToast, showSuccessToast } = useToast();
   const { mutateAsync: createCat } = useMutation({
     mutationFn: (name) => categoryService.createCategory(name),
@@ -48,8 +49,15 @@ export default function Category() {
 
   const { data: categories = [] } = useQuery({
     queryKey: ["category"],
-    queryFn: () => categoryService.getAllCategories(),
-    onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
+    queryFn: async () => {
+      try {
+        const res = await categoryService.getAllCategories();
+        return res;
+      } catch (err) {
+        showErrorToast("Ops!", getErrorMessage(err));
+        return [];
+      }
+    },
   });
 
   const handleSave = async (categoryName) => {

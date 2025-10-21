@@ -1,3 +1,4 @@
+"use client";
 import {
   Dialog,
   DialogContent,
@@ -17,6 +18,9 @@ import { PlusIcon, Trash2Icon } from "lucide-react";
 import Selector from "./selector";
 import { useQuery } from "@tanstack/react-query";
 import { collectionService } from "@/services";
+import ImageWithFallback from "./image-with-fallback";
+import { useToast } from "@/hooks/use-toast";
+import getErrorMessage from "@/utils/get-error-message";
 
 const defaultValues = {
   en_word: "",
@@ -27,18 +31,32 @@ const defaultValues = {
   en_choice: "",
   vn_choice: "",
   image_url: "",
+  image_file: "",
   collectionId: "",
 };
 
 function CardCreation({ isOpen, onClose, isEdit, onSubmit, editValues }) {
-  const { data: collections = [] } = useQuery({
-    queryKey: ["collections"],
-    queryFn: () => collectionService.getAllCollections(),
+  const [imageType, setImageType] = useState("url");
+  const [preview, setPreview] = useState("");
+  const { register, handleSubmit, reset, control, watch, setValue } = useForm({
+    defaultValues: editValues || defaultValues,
   });
 
-  const [imageType, setImageType] = useState("url");
-  const { register, handleSubmit, reset, control } = useForm({
-    defaultValues: editValues || defaultValues,
+  const { showErrorToast } = useToast();
+
+  const imageUrl = watch("image_url");
+
+  const { data: collections = [] } = useQuery({
+    queryKey: ["collections"],
+    queryFn: async () => {
+      try {
+        const res = await collectionService.getAllCollections();
+        return res;
+      } catch (err) {
+        showErrorToast("Ops!", getErrorMessage(err));
+        return [];
+      }
+    },
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -47,17 +65,41 @@ function CardCreation({ isOpen, onClose, isEdit, onSubmit, editValues }) {
   });
   useEffect(() => {
     reset(editValues || {});
+    if (editValues?.image_url) setPreview(editValues.image_url);
   }, [editValues, reset]);
 
+  useEffect(() => {
+    if (imageType === "url" && imageUrl && typeof imageUrl === "string") {
+      setPreview(imageUrl);
+    }
+  }, [imageUrl, imageType]);
+
   const handleFormSubmit = async (data) => {
-    await onSubmit(data);
+    const filteredEx = (data.ex || []).filter(Boolean);
+
+    const finalData = {
+      ...data,
+      ex: filteredEx,
+    };
+    await onSubmit(finalData);
     setImageType("url");
+    setPreview(null);
     reset(defaultValues);
   };
 
-  const handleFileUpload = () => {};
+  const handleFileUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const previewUrl = URL.createObjectURL(file);
+    setPreview(previewUrl);
+    setValue("image_file", file);
+    setValue("image_url", "");
+  };
+
   const handleClose = () => {
     reset(defaultValues);
+    setPreview(null);
+    setImageType("url");
     onClose();
   };
   return (
@@ -177,6 +219,16 @@ function CardCreation({ isOpen, onClose, isEdit, onSubmit, editValues }) {
                   </div>
                 </TabsContent>
               </Tabs>
+
+              {/* Preview */}
+              {preview && (
+                <ImageWithFallback
+                  src={preview}
+                  alt="preview"
+                  folderName="card_thumbnails"
+                  className="w-full h-48 object-contain rounded-md mt-2 border"
+                />
+              )}
             </div>
 
             <div className="grid gap-1">

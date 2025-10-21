@@ -11,6 +11,18 @@ export default function DefaultLayout({ children }) {
   const { loggedIn } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
+  if (loggedIn === null) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[var(--background)] text-[var(--foreground)]">
+        <div className="flex flex-col items-center space-y-4">
+          {/* Spinner */}
+          <div className="w-12 h-12 border-4 border-t-[var(--primary)] border-gray-300 rounded-full animate-spin"></div>
+          {/* Text */}
+          <span className="text-lg font-medium">Loading...</span>
+        </div>
+      </div>
+    );
+  }
   if (!loggedIn) return <LoginForm />;
 
   return (
@@ -21,7 +33,7 @@ export default function DefaultLayout({ children }) {
       <div className="flex flex-1 h-full">
         {/* Sidebar */}
         <aside
-          className={` bg-gray-100 dark:bg-gray-800 transition-all duration-300 overflow-hidden ${
+          className={`bg-gray-100 dark:bg-gray-800 transition-all duration-300 overflow-hidden ${
             isSidebarOpen ? "w-64 p-4 border-r min-w-64" : "w-0 min-w-0"
           }`}
         >

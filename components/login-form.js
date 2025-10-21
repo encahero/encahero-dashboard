@@ -1,20 +1,48 @@
 // app/components/LoginForm.tsx
 "use client";
-
-import { useState } from "react";
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
+import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/auth";
+import { useToast } from "@/hooks/use-toast";
+import { authService } from "@/services";
+import getErrorMessage from "@/utils/get-error-message";
 
 export default function LoginForm() {
   const { login } = useAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { showErrorToast } = useToast();
+  const fpPromise = FingerprintJS.load();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // tạm thời click login là đăng nhập thành công
-    login();
+  const onSubmit = async (data) => {
+    try {
+      const fp = await fpPromise;
+      const result = await fp.get();
+      const deviceId = result.visitorId;
+
+      const res = await authService.login({
+        email: data.email,
+        password: data.password,
+        deviceId: deviceId,
+      });
+
+      if (res) {
+        const { accessToken, refreshToken, user } = res;
+        login(accessToken, refreshToken, user);
+      }
+    } catch (err) {
+      showErrorToast("Ops!", getErrorMessage(err));
+    }
   };
 
   return (
@@ -34,29 +62,35 @@ export default function LoginForm() {
       >
         <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
             <label className="block mb-1">Email</label>
             <Input
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              required
+              {...register("email", { required: "Email is required" })}
               className="bg-[var(--input)] text-[var(--foreground)] border-[var(--border)]"
             />
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.email.message}
+              </p>
+            )}
           </div>
 
           <div>
             <label className="block mb-1">Password</label>
             <Input
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
               placeholder="********"
-              required
+              {...register("password", { required: "Password is required" })}
               className="bg-[var(--input)] text-[var(--foreground)] border-[var(--border)]"
             />
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.password.message}
+              </p>
+            )}
           </div>
 
           <Button

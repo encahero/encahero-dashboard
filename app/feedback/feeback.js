@@ -37,7 +37,9 @@ const FeedBackItem = ({ user, text, images, createdAt, onClickImage }) => {
         </div>
       </CardHeader>
       <CardContent>
-        <p className="mb-2">{text}</p>
+        <p className="mb-2 text-sm text-gray-800 dark:text-gray-200 break-words whitespace-pre-wrap">
+          {text}
+        </p>
 
         {images && images.length > 0 && (
           <div className="flex flex-wrap gap-2">
@@ -66,14 +68,18 @@ const FeedBackItem = ({ user, text, images, createdAt, onClickImage }) => {
 export default function Feedback() {
   const [previewImage, setPreviewImage] = useState(null);
   const { showErrorToast } = useToast();
-  const {
-    data: feedbacks = [],
-    isLoading,
-    isError,
-  } = useQuery({
+  const { data: feedbacks = [], isLoading } = useQuery({
     queryKey: ["feedbacks"],
-    queryFn: () => feedbackService.getAllFeedBack(),
-    onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
+    queryFn: async () => {
+      try {
+        const res = await feedbackService.getAllFeedBack();
+        return res;
+      } catch (err) {
+        console.log(err);
+        showErrorToast("Ops!", getErrorMessage(err));
+        return [];
+      }
+    },
   });
 
   return (

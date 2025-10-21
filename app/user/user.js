@@ -23,8 +23,15 @@ export default function UserPage() {
 
   const { data: usersGrowth = [] } = useQuery({
     queryKey: ["users-growth"],
-    queryFn: () => userService.getUsersGrowth(),
-    onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
+    queryFn: async () => {
+      try {
+        const res = await userService.getUsersGrowth();
+        return res;
+      } catch (err) {
+        showErrorToast("Ops!", getErrorMessage(err));
+        return [];
+      }
+    },
   });
 
   const totalUsers = usersGrowth?.totalUsers ?? 0;
