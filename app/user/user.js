@@ -38,8 +38,8 @@ export default function UserPage() {
   const chartData = usersGrowth?.data ?? [];
 
   return (
-    <ScrollArea className="h-full w-full">
-      <div className="space-y-6 pb-32 p-12">
+    <div className="h-full w-full">
+      <div className="space-y-6 p-4 pb-32">
         <Card>
           <CardHeader>
             <CardTitle>Total Users</CardTitle>
@@ -51,6 +51,6 @@ export default function UserPage() {
         <UserGrowChart data={chartData} />
         <UserTable data={users} />
       </div>
-    </ScrollArea>
+    </div>
   );
 }

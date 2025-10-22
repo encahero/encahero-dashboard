@@ -3,8 +3,6 @@ import { PenLineIcon, Trash2Icon } from "lucide-react";
 import formatDate from "@/utils/format-date";
 
 function CategoryTable({ data, onDelete, onEdit }) {
-  const newData = [...data, ...data, ...data];
-
   return (
     <div className="overflow-auto border rounded bg-[var(--sidebar)] h-[80vh] w-full">
       <table className="w-full min-w-[700px] table-auto border-collapse">
@@ -18,7 +16,7 @@ function CategoryTable({ data, onDelete, onEdit }) {
           </tr>
         </thead>
         <tbody>
-          {newData.map((cat, index) => (
+          {data.map((cat, index) => (
             <tr key={index} className="hover:bg-muted/50">
               <td className="px-4 py-2">{cat.id}</td>
               <td className="px-4 py-2">{cat.name}</td>

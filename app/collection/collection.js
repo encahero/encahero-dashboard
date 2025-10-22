@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 import { collectionService } from "@/services";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import CollectionTable from "@/components/colelction-table";
+import CollectionTable from "@/components/collection-table";
 import CollectionCreation from "@/components/collection-creation";
 import { useToast } from "@/hooks/use-toast";
 import getErrorMessage from "@/utils/get-error-message";

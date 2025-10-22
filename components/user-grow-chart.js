@@ -43,7 +43,11 @@ function getFilteredData(data, filterType) {
     let key = "";
 
     if (filterType === "day") {
-      key = formatDate(date);
+      // YYYY-MM-DD
+      const yyyy = date.getFullYear();
+      const mm = String(date.getMonth() + 1).padStart(2, "0");
+      const dd = String(date.getDate()).padStart(2, "0");
+      key = `${yyyy}-${mm}-${dd}`;
     } else if (filterType === "month") {
       key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
         2,
@@ -71,12 +75,14 @@ export default function UserGrowChart({ data }) {
   const filteredData = getFilteredData(formattedData, filterType); // Hàm handle group
 
   return (
-    <Card>
-      <CardHeader className="flex justify-between items-center">
-        <CardTitle>User Growth</CardTitle>
+    <Card className="w-full">
+      <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <CardTitle className="text-lg sm:text-xl font-semibold">
+          User Growth
+        </CardTitle>
 
         <Select value={filterType} onValueChange={setFilterType}>
-          <SelectTrigger className="w-32">
+          <SelectTrigger className="w-full sm:w-32">
             <SelectValue placeholder="Filter" />
           </SelectTrigger>
           <SelectContent>
@@ -87,18 +93,20 @@ export default function UserGrowChart({ data }) {
         </Select>
       </CardHeader>
 
-      <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
+      <CardContent className="w-full h-[250px] sm:h-[300px] md:h-[400px]">
+        <ResponsiveContainer width="100%" height="100%">
           <LineChart data={filteredData}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="label" />
-            <YAxis />
+            <XAxis dataKey="label" tick={{ fontSize: 10 }} />
+            <YAxis tick={{ fontSize: 10 }} />
             <Tooltip content={CustomTooltip} />
             <Line
               type="monotone"
               dataKey="count"
-              stroke="#8884d8"
+              stroke="#6366f1"
               strokeWidth={2}
+              dot={{ r: 3 }}
+              activeDot={{ r: 5 }}
             />
           </LineChart>
         </ResponsiveContainer>

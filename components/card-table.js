@@ -1,12 +1,3 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { PenLineIcon, Trash2Icon } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -17,6 +8,7 @@ import { collectionService } from "@/services";
 import ImageWithFallback from "./image-with-fallback";
 import { useToast } from "@/hooks/use-toast";
 import getErrorMessage from "@/utils/get-error-message";
+import formatDate from "@/utils/format-date";
 
 function CardTable({ data, onDelete, onEdit }) {
   const [search, setSearch] = useState("");
@@ -82,68 +74,74 @@ function CardTable({ data, onDelete, onEdit }) {
         />
       </div>
 
-      <ScrollArea className="h-[76vh] border rounded bg-[var(--sidebar)]">
-        <div className="min-w-max">
-          <Table noWrapper className="w-full table-auto">
-            <TableHeader>
-              <TableRow className="bg-gray-100 dark:bg-stone-950 sticky top-0 z-10 hover:bg-muted/100">
-                <TableHead className="px-4 py-2">ID</TableHead>
-                <TableHead className="px-4 py-2">Thumbnail</TableHead>
-                <TableHead className="px-4 py-2">EN Word</TableHead>
-                <TableHead className="px-4 py-2">VN Word</TableHead>
-                <TableHead className="px-4 py-2">Type</TableHead>
-                <TableHead className="px-4 py-2">Collection</TableHead>
-
-                <TableHead className="px-4 py-2">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-
-            <TableBody>
-              {filteredCards.map((card) => (
-                <TableRow
-                  key={card.id}
-                  className="hover:bg-gray-200 dark:hover:bg-stone-800"
+      <div className="overflow-auto border rounded bg-[var(--sidebar)] h-[76vh]">
+        <table className="w-full min-w-[800px] table-auto border-collapse">
+          <thead className="sticky top-0 bg-gray-100 dark:bg-stone-950 z-2">
+            <tr>
+              {[
+                "ID",
+                "Thumbnail",
+                "EN Word",
+                "VN Word",
+                "Type",
+                "Collection",
+                "Updated At",
+                "Actions",
+              ].map((text) => (
+                <th
+                  key={text}
+                  className="px-4 py-2 text-left font-semibold text-sm text-gray-700 dark:text-gray-200 uppercase tracking-wide"
                 >
-                  <TableCell className="px-4 py-2">{card.id}</TableCell>
-                  <TableCell className="px-4 py-2">
-                    <ImageWithFallback
-                      src={card.image_url}
-                      alt={card.en_word}
-                      className="w-8 h-8  dark:bg-white border-1"
-                    />
-                  </TableCell>
-                  <TableCell className="px-4 py-2">{card.en_word}</TableCell>
-                  <TableCell className="px-4 py-2 max-w-[200px] overflow-hidden whitespace-nowrap truncate">
-                    {card.vn_word}
-                  </TableCell>
-                  <TableCell className="px-4 py-2">{card.type}</TableCell>
-
-                  <TableCell className="px-4 py-2 max-w-[200px] overflow-hidden whitespace-nowrap truncate">
-                    {card.collectionName}
-                  </TableCell>
-
-                  <TableCell className="px-4 py-2 space-x-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => onEdit(card)}
-                    >
-                      <PenLineIcon />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => onDelete(card.id)}
-                    >
-                      <Trash2Icon />
-                    </Button>
-                  </TableCell>
-                </TableRow>
+                  {text}
+                </th>
               ))}
-            </TableBody>
-          </Table>
-        </div>
-      </ScrollArea>
+            </tr>
+          </thead>
+
+          <tbody>
+            {filteredCards.map((card) => (
+              <tr
+                key={card.id}
+                className="hover:bg-gray-200 dark:hover:bg-stone-800"
+              >
+                <td className="px-4 py-2">{card.id}</td>
+                <td className="px-4 py-2">
+                  <ImageWithFallback
+                    src={card.image_url}
+                    alt={card.en_word}
+                    className="w-8 h-8 dark:bg-white border"
+                  />
+                </td>
+                <td className="px-4 py-2">{card.en_word}</td>
+                <td className="px-4 py-2 max-w-[200px] overflow-hidden whitespace-nowrap truncate">
+                  {card.vn_word}
+                </td>
+                <td className="px-4 py-2">{card.type}</td>
+                <td className="px-4 py-2 max-w-[200px] overflow-hidden whitespace-nowrap truncate">
+                  {card.collectionName}
+                </td>
+                <td className="px-4 py-2">{formatDate(card.updated_at)}</td>
+                <td className="px-4 py-2 flex space-x-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => onEdit(card)}
+                  >
+                    <PenLineIcon />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => onDelete(card.id)}
+                  >
+                    <Trash2Icon />
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

@@ -1,19 +1,14 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { PenLineIcon, Trash2Icon } from "lucide-react";
 import getImageUrl from "@/utils/get-image-url";
 import formatDate from "@/utils/format-date";
 import { Input } from "./ui/input";
+import { CardHeader, CardTitle } from "./ui/card";
 import { useState } from "react";
 
-function UserTable({ data }) {
+export default function UserTable({ data, onEdit, onDelete }) {
   const [search, setSearch] = useState("");
 
   const filteredData = data.filter((u) => {
@@ -29,62 +24,91 @@ function UserTable({ data }) {
   });
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>User List</CardTitle>
+    <div className="space-y-4">
+      {/* Header + Search */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <h2 className="text-lg sm:text-xl font-semibold tracking-wide">
+          User List
+        </h2>
         <Input
-          placeholder="Search by Name"
+          placeholder="Search by name or username..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full sm:w-64"
+          className="max-w-xs"
         />
-      </CardHeader>
-      <CardContent className="p-0">
-        <ScrollArea className="h-[400px] px-6">
-          <Table noWrapper>
-            <TableHeader className="bg-gray-100 dark:bg-stone-950 sticky top-0 z-10">
-              <TableRow>
-                <TableHead className="px-4 py-2">ID</TableHead>
-                <TableHead className="px-4 py-2">Email</TableHead>
-                <TableHead className="px-4 py-2">Username</TableHead>
-                <TableHead className="px-4 py-2">Avatar</TableHead>
-                <TableHead className="px-4 py-2">Full Name</TableHead>
-                <TableHead className="px-4 py-2">Created At</TableHead>
-                <TableHead className="px-4 py-2">Updated At</TableHead>
-                <TableHead className="px-4 py-2">Time Zone</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredData.map((u) => (
-                <TableRow key={u.id}>
-                  <TableCell className="px-4 py-2">{u.id}</TableCell>
-                  <TableCell className="px-4 py-2">{u.email}</TableCell>
-                  <TableCell className="px-4 py-2">{u.username}</TableCell>
-                  <TableCell className="px-4 py-2">
+      </div>
+
+      {/* Table */}
+      <div className="overflow-auto border rounded bg-[var(--sidebar)] h-[70vh] w-full">
+        <table className="w-full min-w-[1000px] table-auto border-collapse">
+          <thead className="sticky top-0 bg-gray-100 dark:bg-stone-950 z-2">
+            <tr>
+              <th className="px-4 py-2 text-left">ID</th>
+              <th className="px-4 py-2 text-left">Email</th>
+              <th className="px-4 py-2 text-left">Username</th>
+              <th className="px-4 py-2 text-left">Avatar</th>
+              <th className="px-4 py-2 text-left">Full Name</th>
+              <th className="px-4 py-2 text-left">Created At</th>
+              <th className="px-4 py-2 text-left">Updated At</th>
+              <th className="px-4 py-2 text-left">Time Zone</th>
+              <th className="px-4 py-2 text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredData.length > 0 ? (
+              filteredData.map((u, index) => (
+                <tr
+                  key={`${u.id}-${index}`}
+                  className="hover:bg-muted/50 transition-colors"
+                >
+                  <td className="px-4 py-2">{u.id}</td>
+                  <td className="px-4 py-2 break-all">{u.email}</td>
+                  <td className="px-4 py-2">{u.username}</td>
+                  <td className="px-4 py-2">
                     <img
                       src={getImageUrl(u.avatar)}
-                      className="w-8 h-8 rounded-full dark:bg-white border-1"
+                      alt={u.username}
+                      className="w-8 h-8 rounded-full border dark:bg-white"
                     />
-                  </TableCell>
-                  <TableCell className="px-4 py-2">
-                    {((u.firstName || "") + " " + (u.lastName || "")).trim() ||
+                  </td>
+                  <td className="px-4 py-2">
+                    {`${u.firstName || ""} ${u.lastName || ""}`.trim() ||
                       "NO NAME"}
-                  </TableCell>
-                  <TableCell className="px-4 py-2">
-                    {formatDate(u.created_at)}
-                  </TableCell>
-                  <TableCell className="px-4 py-2">
-                    {formatDate(u.updated_at)}
-                  </TableCell>
-                  <TableCell className="px-4 py-2">{u.time_zone}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </ScrollArea>
-      </CardContent>
-    </Card>
+                  </td>
+                  <td className="px-4 py-2">{formatDate(u.created_at)}</td>
+                  <td className="px-4 py-2">{formatDate(u.updated_at)}</td>
+                  <td className="px-4 py-2">{u.time_zone}</td>
+                  <td className="px-4 py-2 flex space-x-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => onEdit?.(u)}
+                    >
+                      <PenLineIcon className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => onDelete?.(u.id)}
+                    >
+                      <Trash2Icon className="w-4 h-4" />
+                    </Button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan={9}
+                  className="text-center py-6 text-gray-500 dark:text-gray-400"
+                >
+                  No users found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 }
-
-export default UserTable;
