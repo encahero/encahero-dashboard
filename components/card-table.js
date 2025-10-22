@@ -83,64 +83,66 @@ function CardTable({ data, onDelete, onEdit }) {
       </div>
 
       <ScrollArea className="h-[76vh] border rounded bg-[var(--sidebar)]">
-        <Table noWrapper className="w-full">
-          <TableHeader>
-            <TableRow className="bg-gray-100 dark:bg-stone-950 sticky top-0 z-10 hover:bg-muted/100">
-              <TableHead className="px-4 py-2">ID</TableHead>
-              <TableHead className="px-4 py-2">Thumbnail</TableHead>
-              <TableHead className="px-4 py-2">EN Word</TableHead>
-              <TableHead className="px-4 py-2">VN Word</TableHead>
-              <TableHead className="px-4 py-2">Type</TableHead>
-              <TableHead className="px-4 py-2">Collection</TableHead>
+        <div className="min-w-max">
+          <Table noWrapper className="w-full table-auto">
+            <TableHeader>
+              <TableRow className="bg-gray-100 dark:bg-stone-950 sticky top-0 z-10 hover:bg-muted/100">
+                <TableHead className="px-4 py-2">ID</TableHead>
+                <TableHead className="px-4 py-2">Thumbnail</TableHead>
+                <TableHead className="px-4 py-2">EN Word</TableHead>
+                <TableHead className="px-4 py-2">VN Word</TableHead>
+                <TableHead className="px-4 py-2">Type</TableHead>
+                <TableHead className="px-4 py-2">Collection</TableHead>
 
-              <TableHead className="px-4 py-2">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-
-          <TableBody>
-            {filteredCards.map((card) => (
-              <TableRow
-                key={card.id}
-                className="hover:bg-gray-200 dark:hover:bg-stone-800"
-              >
-                <TableCell className="px-4 py-2">{card.id}</TableCell>
-                <TableCell className="px-4 py-2">
-                  <ImageWithFallback
-                    src={card.image_url}
-                    alt={card.en_word}
-                    className="w-8 h-8  dark:bg-white border-1"
-                  />
-                </TableCell>
-                <TableCell className="px-4 py-2">{card.en_word}</TableCell>
-                <TableCell className="px-4 py-2 max-w-[200px] overflow-hidden whitespace-nowrap truncate">
-                  {card.vn_word}
-                </TableCell>
-                <TableCell className="px-4 py-2">{card.type}</TableCell>
-
-                <TableCell className="px-4 py-2 max-w-[200px] overflow-hidden whitespace-nowrap truncate">
-                  {card.collectionName}
-                </TableCell>
-
-                <TableCell className="px-4 py-2 space-x-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => onEdit(card)}
-                  >
-                    <PenLineIcon />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={() => onDelete(card.id)}
-                  >
-                    <Trash2Icon />
-                  </Button>
-                </TableCell>
+                <TableHead className="px-4 py-2">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+
+            <TableBody>
+              {filteredCards.map((card) => (
+                <TableRow
+                  key={card.id}
+                  className="hover:bg-gray-200 dark:hover:bg-stone-800"
+                >
+                  <TableCell className="px-4 py-2">{card.id}</TableCell>
+                  <TableCell className="px-4 py-2">
+                    <ImageWithFallback
+                      src={card.image_url}
+                      alt={card.en_word}
+                      className="w-8 h-8  dark:bg-white border-1"
+                    />
+                  </TableCell>
+                  <TableCell className="px-4 py-2">{card.en_word}</TableCell>
+                  <TableCell className="px-4 py-2 max-w-[200px] overflow-hidden whitespace-nowrap truncate">
+                    {card.vn_word}
+                  </TableCell>
+                  <TableCell className="px-4 py-2">{card.type}</TableCell>
+
+                  <TableCell className="px-4 py-2 max-w-[200px] overflow-hidden whitespace-nowrap truncate">
+                    {card.collectionName}
+                  </TableCell>
+
+                  <TableCell className="px-4 py-2 space-x-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => onEdit(card)}
+                    >
+                      <PenLineIcon />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => onDelete(card.id)}
+                    >
+                      <Trash2Icon />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </ScrollArea>
     </div>
   );

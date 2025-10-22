@@ -6,10 +6,13 @@ import SideBar from "./sidebar";
 import { useAuth } from "@/context/auth";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
+import useBreakpoint from "@/hooks/use-breakpoint";
 
 export default function DefaultLayout({ children }) {
   const { loggedIn } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const breakpoint = useBreakpoint();
+  const isMobile = ["xs", "sm", "md"].includes(breakpoint);
 
   if (loggedIn === null) {
     return (
@@ -27,32 +30,41 @@ export default function DefaultLayout({ children }) {
 
   return (
     <div className="h-screen flex flex-col overflow-hidden">
-      {/* Header */}
-      <Header />
+      <div className="z-10">
+        <Header />
+      </div>
 
-      <div className="flex flex-1 h-full">
+      <div className="flex z-1 flex-1 h-full relative">
         {/* Sidebar */}
         <aside
-          className={`bg-gray-100 dark:bg-gray-800 transition-all duration-300 overflow-hidden ${
-            isSidebarOpen ? "w-64 p-4 border-r min-w-64" : "w-0 min-w-0"
-          }`}
+          className={`
+          bg-gray-100 dark:bg-gray-800   overflow-hidden
+          ${
+            isMobile
+              ? `fixed inset-y-0 left-0 w-64 transition-all  duration-300 transform z-5 border-r pt-20 ${
+                  isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+                }`
+              : `transition-width duration-300 ${
+                  isSidebarOpen ? "w-64 border-r p-4" : "w-0"
+                }`
+          }
+        `}
         >
-          <SideBar />
+          <SideBar onItemClick={() => setIsSidebarOpen(false)} />
         </aside>
-
+        <Button
+          size="sm"
+          variant="outline"
+          className={`absolute z-50 top-4 ${
+            isSidebarOpen ? "left-52" : "left-4"
+          }`}
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        >
+          {isSidebarOpen ? <X size={18} /> : <Menu size={18} />}
+        </Button>
         {/* Main content */}
-        <main className="flex-1 relative">
+        <main className="flex-1 relative overflow-auto">
           {/* Toggle button */}
-          <Button
-            size="sm"
-            variant="outline"
-            className={`absolute z-10 ${
-              isSidebarOpen ? "top-4 -left-12" : "top-4 left-4"
-            }`}
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          >
-            {isSidebarOpen ? <X size={18} /> : <Menu size={18} />}
-          </Button>
 
           {children}
         </main>

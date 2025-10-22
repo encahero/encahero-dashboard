@@ -4,9 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { BookText, Users, Layers, Folder, MessageSquare } from "lucide-react";
+import useBreakpoint from "@/hooks/use-breakpoint";
 
-export default function SideBar() {
+export default function SideBar({ onItemClick }) {
   const pathname = usePathname();
+
+  const breakpoint = useBreakpoint();
+  const isMobile = ["xs", "sm", "md"].includes(breakpoint);
 
   const menuItems = [
     { name: "Card", href: "/card", icon: BookText },
@@ -22,7 +26,11 @@ export default function SideBar() {
         const isActive = pathname === item.href;
         const Icon = item.icon;
         return (
-          <Link key={item.name} href={item.href}>
+          <Link
+            key={item.name}
+            href={item.href}
+            onClick={() => isMobile && onItemClick?.()}
+          >
             <Button
               variant="ghost"
               className={`w-full text-left justify-start gap-2 rounded-md ${
