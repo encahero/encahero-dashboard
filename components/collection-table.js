@@ -1,10 +1,16 @@
 import { PenLineIcon, Trash2Icon } from "lucide-react";
 import formatDate from "@/utils/format-date";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { headerTextClassName } from "@/constants";
 
 function CollectionTable({ data, onDelete, onEdit }) {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+  const [collections, setCollections] = useState([]);
+
+  useEffect(() => {
+    setCollections(data);
+  }, [data]);
 
   const handleSort = (key) => {
     let direction = "asc";
@@ -35,11 +41,11 @@ function CollectionTable({ data, onDelete, onEdit }) {
       <table className="w-full min-w-[700px] table-auto border-collapse">
         <thead className="sticky top-0 bg-gray-100 dark:bg-stone-950 z-2">
           <tr>
-            <th className="px-4 py-2 text-left">ID</th>
-            <th className="px-4 py-2 text-left">Name</th>
-            <th className="px-4 py-2 text-left">Category</th>
+            <th className={headerTextClassName}>ID</th>
+            <th className={headerTextClassName}>Name</th>
+            <th className={headerTextClassName}>Category</th>
             <th
-              className="px-4 py-2 text-left cursor-pointer"
+              className={`${headerTextClassName} cursor-pointer`}
               onClick={() => handleSort("card_count")}
             >
               CC{" "}
@@ -50,7 +56,7 @@ function CollectionTable({ data, onDelete, onEdit }) {
                 : ""}
             </th>
             <th
-              className="px-4 py-2 text-left cursor-pointer"
+              className={`${headerTextClassName} cursor-pointer`}
               onClick={() => handleSort("register_count")}
             >
               RC{" "}
@@ -61,7 +67,7 @@ function CollectionTable({ data, onDelete, onEdit }) {
                 : ""}
             </th>
             <th
-              className="px-4 py-2 text-left cursor-pointer"
+              className={`${headerTextClassName} cursor-pointer`}
               onClick={() => handleSort("updated_at")}
             >
               Updated At{" "}
@@ -71,12 +77,12 @@ function CollectionTable({ data, onDelete, onEdit }) {
                   : "↓"
                 : ""}
             </th>
-            <th className="px-4 py-2 text-left">Actions</th>
+            <th className={headerTextClassName}>Actions</th>
           </tr>
         </thead>
 
         <tbody>
-          {data.map((col) => (
+          {collections.map((col) => (
             <tr key={col.id} className="hover:bg-muted/50">
               <td className="px-4 py-2">{col.id}</td>
               <td className="px-4 py-2">{col.name}</td>

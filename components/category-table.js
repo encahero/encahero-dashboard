@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { PenLineIcon, Trash2Icon } from "lucide-react";
 import formatDate from "@/utils/format-date";
+import { headerTextClassName } from "@/constants";
 
 function CategoryTable({ data, onDelete, onEdit }) {
   return (
@@ -8,11 +9,11 @@ function CategoryTable({ data, onDelete, onEdit }) {
       <table className="w-full min-w-[700px] table-auto border-collapse">
         <thead className="sticky top-0 bg-gray-100 dark:bg-stone-950 z-2">
           <tr>
-            <th className="px-4 py-2 text-left">ID</th>
-            <th className="px-4 py-2 text-left">Name</th>
-            <th className="px-4 py-2 text-left">CC</th>
-            <th className="px-4 py-2 text-left">Created At</th>
-            <th className="px-4 py-2 text-left">Actions</th>
+            <th className={headerTextClassName}>ID</th>
+            <th className={headerTextClassName}>Name</th>
+            <th className={headerTextClassName}>CC</th>
+            <th className={headerTextClassName}>Created At</th>
+            <th className={headerTextClassName}>Actions</th>
           </tr>
         </thead>
         <tbody>

@@ -9,6 +9,7 @@ import ImageWithFallback from "./image-with-fallback";
 import { useToast } from "@/hooks/use-toast";
 import getErrorMessage from "@/utils/get-error-message";
 import formatDate from "@/utils/format-date";
+import { headerTextClassName } from "@/constants";
 
 function CardTable({ data, onDelete, onEdit }) {
   const [search, setSearch] = useState("");
@@ -62,6 +63,7 @@ function CardTable({ data, onDelete, onEdit }) {
           list={collections}
           placeholder="Collection"
           property={"name"}
+          displayProperty={"name"}
           triggerClassName="w-48"
         />
 
@@ -88,10 +90,7 @@ function CardTable({ data, onDelete, onEdit }) {
                 "Updated At",
                 "Actions",
               ].map((text) => (
-                <th
-                  key={text}
-                  className="px-4 py-2 text-left font-semibold text-sm text-gray-700 dark:text-gray-200 uppercase tracking-wide"
-                >
+                <th key={text} className={headerTextClassName}>
                   {text}
                 </th>
               ))}

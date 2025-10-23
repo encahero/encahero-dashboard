@@ -5,23 +5,56 @@ import { PenLineIcon, Trash2Icon } from "lucide-react";
 import getImageUrl from "@/utils/get-image-url";
 import formatDate from "@/utils/format-date";
 import { Input } from "./ui/input";
-import { CardHeader, CardTitle } from "./ui/card";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { headerTextClassName } from "@/constants";
 
 export default function UserTable({ data, onEdit, onDelete }) {
   const [search, setSearch] = useState("");
+  const [sortConfig, setSortConfig] = useState({
+    key: "created_at",
+    direction: "asc",
+  });
 
-  const filteredData = data.filter((u) => {
-    const fullName = (
-      (u.firstName || "") +
-      " " +
-      (u.lastName || "")
-    ).toLowerCase();
-    const username = (u.username || "").toLowerCase();
+  const handleSort = (key) => {
+    setSortConfig((prev) => {
+      if (prev.key === key) {
+        // Đổi chiều nếu cùng cột
+        return { key, direction: prev.direction === "asc" ? "desc" : "asc" };
+      }
+      return { key, direction: "asc" };
+    });
+  };
+
+  // Tính toán danh sách hiển thị (lọc + sắp xếp)
+  const filteredData = useMemo(() => {
     const keyword = search.toLowerCase();
 
-    return fullName.includes(keyword) || username.includes(keyword);
-  });
+    const filtered = data.filter((u) => {
+      const fullName = (
+        (u.firstName || "") +
+        " " +
+        (u.lastName || "")
+      ).toLowerCase();
+      const username = (u.username || "").toLowerCase();
+      return fullName.includes(keyword) || username.includes(keyword);
+    });
+
+    // sort
+    const { key, direction } = sortConfig;
+    return [...filtered].sort((a, b) => {
+      let aVal = a[key];
+      let bVal = b[key];
+
+      if (key === "created_at" || key === "updated_at") {
+        aVal = new Date(aVal).getTime();
+        bVal = new Date(bVal).getTime();
+      }
+
+      if (aVal < bVal) return direction === "asc" ? -1 : 1;
+      if (aVal > bVal) return direction === "asc" ? 1 : -1;
+      return 0;
+    });
+  }, [data, search, sortConfig]);
 
   return (
     <div className="space-y-4">
@@ -43,15 +76,26 @@ export default function UserTable({ data, onEdit, onDelete }) {
         <table className="w-full min-w-[1000px] table-auto border-collapse">
           <thead className="sticky top-0 bg-gray-100 dark:bg-stone-950 z-2">
             <tr>
-              <th className="px-4 py-2 text-left">ID</th>
-              <th className="px-4 py-2 text-left">Email</th>
-              <th className="px-4 py-2 text-left">Username</th>
-              <th className="px-4 py-2 text-left">Avatar</th>
-              <th className="px-4 py-2 text-left">Full Name</th>
-              <th className="px-4 py-2 text-left">Created At</th>
-              <th className="px-4 py-2 text-left">Updated At</th>
-              <th className="px-4 py-2 text-left">Time Zone</th>
-              <th className="px-4 py-2 text-left">Actions</th>
+              <th className={headerTextClassName}>ID</th>
+              <th className={headerTextClassName}>Email</th>
+              <th className={headerTextClassName}>Username</th>
+              <th className={headerTextClassName}>Avatar</th>
+              <th className={headerTextClassName}>Full Name</th>
+              {/* Sortable column */}
+              <th
+                className={`${headerTextClassName} cursor-pointer select-none`}
+                onClick={() => handleSort("created_at")}
+              >
+                Created At{" "}
+                {sortConfig.key === "created_at"
+                  ? sortConfig.direction === "asc"
+                    ? "↑"
+                    : "↓"
+                  : ""}
+              </th>
+              <th className={headerTextClassName}>Updated At</th>
+              <th className={headerTextClassName}>Time Zone</th>
+              <th className={headerTextClassName}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -72,8 +116,7 @@ export default function UserTable({ data, onEdit, onDelete }) {
                     />
                   </td>
                   <td className="px-4 py-2">
-                    {`${u.firstName || ""} ${u.lastName || ""}`.trim() ||
-                      "NO NAME"}
+                    {`${u.firstName || ""} ${u.lastName || ""}`.trim() || "-"}
                   </td>
                   <td className="px-4 py-2">{formatDate(u.created_at)}</td>
                   <td className="px-4 py-2">{formatDate(u.updated_at)}</td>
