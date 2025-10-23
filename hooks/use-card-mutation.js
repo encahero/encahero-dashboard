@@ -9,6 +9,7 @@ export function useCardMutations({
   setModalOpen,
   showErrorToast,
   showSuccessToast,
+  queryKey,
 }) {
   const queryClient = useQueryClient();
 
@@ -19,8 +20,19 @@ export function useCardMutations({
         ? cardsService.updateCard(editCard.id, formData)
         : cardsService.createCard(formData);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries(["cards"]);
+    onSuccess: (newCard) => {
+      queryClient.setQueryData(queryKey, (old) => {
+        if (editCard) {
+          return {
+            ...old,
+            data:
+              old?.data.length > 0 &&
+              old.data.map((c) => (c.id === newCard.id ? newCard : c)),
+          };
+        } else {
+          return { ...old, data: [newCard, ...old.data] };
+        }
+      });
       setModalOpen(false);
       setEditCard(null);
       showSuccessToast(
@@ -34,8 +46,15 @@ export function useCardMutations({
 
   const deleteMutation = useMutation({
     mutationFn: (id) => cardsService.deleteCard(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["cards"]);
+    onSuccess: (deletedCard) => {
+      queryClient.setQueryData(queryKey, (old) => {
+        return {
+          ...old,
+          data:
+            old?.data.length > 0 &&
+            old.data.filter((c) => c.id !== deletedCard.id),
+        };
+      });
       showSuccessToast("Success", "Deleted successfully");
     },
     onError: (err) =>

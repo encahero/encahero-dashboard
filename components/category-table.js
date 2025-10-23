@@ -4,6 +4,7 @@ import formatDate from "@/utils/format-date";
 import { headerTextClassName } from "@/constants";
 import TableSkeleton from "./table-loading";
 import { useMemo, useState } from "react";
+import sortTable from "@/utils/sort-table";
 
 function CategoryTable({ data, onDelete, onEdit, isLoading }) {
   const [sortConfig, setSortConfig] = useState({
@@ -20,24 +21,10 @@ function CategoryTable({ data, onDelete, onEdit, isLoading }) {
     });
   };
 
-  const sortedData = useMemo(() => {
-    if (!Array.isArray(data) || data.length === 0) return [];
-    const { key, direction } = sortConfig;
-
-    return [...data].sort((a, b) => {
-      let aVal = a[key];
-      let bVal = b[key];
-
-      if (key === "updated_at" || key === "created_at") {
-        aVal = new Date(aVal).getTime();
-        bVal = new Date(bVal).getTime();
-      }
-
-      if (aVal < bVal) return direction === "asc" ? -1 : 1;
-      if (aVal > bVal) return direction === "asc" ? 1 : -1;
-      return 0;
-    });
-  }, [data, sortConfig]);
+  const sortedData = useMemo(
+    () => sortTable(data, sortConfig),
+    [data, sortConfig]
+  );
 
   return (
     <div className="overflow-auto border rounded bg-[var(--sidebar)] h-[80vh] w-full">

@@ -16,7 +16,6 @@ import { useCardMutations } from "@/hooks/use-card-mutation";
 export default function Cards() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editCard, setEditCard] = useState(null);
-  const queryClient = useQueryClient();
   const { showErrorToast, showSuccessToast } = useToast();
 
   const [filterValues, setFilterValues] = useState({
@@ -27,6 +26,15 @@ export default function Cards() {
   });
 
   const [page, setPage] = useState(1);
+
+  const queryKey = [
+    "cards",
+    filterValues.searchValue,
+    filterValues.collectionName,
+    filterValues.type,
+    page,
+    filterValues.rowQuantity,
+  ];
 
   const { data: cardData = [], isLoading } = useCards({
     ...filterValues,
@@ -47,6 +55,7 @@ export default function Cards() {
     setModalOpen,
     showErrorToast,
     showSuccessToast,
+    queryKey,
   });
 
   const handleEdit = useCallback((card) => {

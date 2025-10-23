@@ -1,8 +1,6 @@
 export default function convertCardFormData(data) {
   const formData = new FormData();
 
-  console.log({ data });
-
   formData.append("en_word", data.en_word);
   formData.append("vn_word", data.vn_word);
   formData.append("meaning", data.meaning);

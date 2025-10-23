@@ -5,6 +5,7 @@ import ImageWithFallback from "./image-with-fallback";
 import formatDate from "@/utils/format-date";
 import { headerTextClassName } from "@/constants";
 import TableSkeleton from "./table-loading";
+import sortTable from "@/utils/sort-table";
 
 function CardTable({ data = [], onDelete, onEdit, isLoading = false }) {
   const [sortConfig, setSortConfig] = useState({
@@ -21,24 +22,10 @@ function CardTable({ data = [], onDelete, onEdit, isLoading = false }) {
     });
   };
 
-  const sortedData = useMemo(() => {
-    if (!Array.isArray(data) || data.length === 0) return [];
-    const { key, direction } = sortConfig;
-
-    return [...data].sort((a, b) => {
-      let aVal = a[key];
-      let bVal = b[key];
-
-      if (key === "updated_at") {
-        aVal = new Date(aVal).getTime();
-        bVal = new Date(bVal).getTime();
-      }
-
-      if (aVal < bVal) return direction === "asc" ? -1 : 1;
-      if (aVal > bVal) return direction === "asc" ? 1 : -1;
-      return 0;
-    });
-  }, [data, sortConfig]);
+  const sortedData = useMemo(
+    () => sortTable(data, sortConfig),
+    [data, sortConfig]
+  );
 
   return (
     <div>

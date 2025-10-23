@@ -7,6 +7,7 @@ import formatDate from "@/utils/format-date";
 import { useMemo, useState } from "react";
 import { headerTextClassName } from "@/constants";
 import TableSkeleton from "./table-loading";
+import sortTable from "@/utils/sort-table";
 
 export default function UserTable({ data = [], onEdit, onDelete, isLoading }) {
   const [sortConfig, setSortConfig] = useState({
@@ -23,22 +24,10 @@ export default function UserTable({ data = [], onEdit, onDelete, isLoading }) {
     });
   };
 
-  const filteredData = useMemo(() => {
-    const { key, direction } = sortConfig;
-    return [...data].sort((a, b) => {
-      let aVal = a[key];
-      let bVal = b[key];
-
-      if (key === "created_at" || key === "updated_at") {
-        aVal = new Date(aVal).getTime();
-        bVal = new Date(bVal).getTime();
-      }
-
-      if (aVal < bVal) return direction === "asc" ? -1 : 1;
-      if (aVal > bVal) return direction === "asc" ? 1 : -1;
-      return 0;
-    });
-  }, [data, sortConfig]);
+  const sortedData = useMemo(
+    () => sortTable(data, sortConfig),
+    [data, sortConfig]
+  );
 
   return (
     <div className="space-y-4">
@@ -92,8 +81,8 @@ export default function UserTable({ data = [], onEdit, onDelete, isLoading }) {
           <tbody>
             {isLoading ? (
               <TableSkeleton rows={5} columns={9} />
-            ) : filteredData.length > 0 ? (
-              filteredData.map((u, index) => (
+            ) : sortedData.length > 0 ? (
+              sortedData.map((u, index) => (
                 <tr
                   key={`${u.id}-${index}`}
                   className="hover:bg-muted/50 transition-colors"
