@@ -10,6 +10,7 @@ import CollectionTable from "@/components/collection-table";
 import CollectionCreation from "@/components/collection-creation";
 import { useToast } from "@/hooks/use-toast";
 import getErrorMessage from "@/utils/get-error-message";
+import useCollectionMutation from "@/hooks/use-collection-mutation";
 
 export default function Collection() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -30,36 +31,7 @@ export default function Collection() {
     },
   });
 
-  const { mutateAsync: createCol } = useMutation({
-    mutationFn: ({ name, categoryName }) =>
-      collectionService.createCollection(name, categoryName),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["collections"]);
-      setModalOpen(false);
-      showSuccessToast("Success", "Create collection successfully");
-    },
-    onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
-  });
-
-  const { mutateAsync: updateCol } = useMutation({
-    mutationFn: ({ id, name, categoryName }) =>
-      collectionService.updateCollection(id, name, categoryName),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["collections"]);
-      setModalOpen(false);
-      showSuccessToast("Success", "Update collection successfully");
-    },
-    onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
-  });
-
-  const { mutate: deleteCol } = useMutation({
-    mutationFn: (id) => collectionService.deleteCollection(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["collections"]);
-      showSuccessToast("Success", "Delete collection successfully");
-    },
-    onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
-  });
+  const { createCol, updateCol, deleteCol } = useCollectionMutation();
 
   const handleEdit = (col) => {
     setEditCollection(col);
@@ -74,14 +46,10 @@ export default function Collection() {
       } else {
         await createCol({ name, categoryName });
       }
+      setModalOpen(false);
+      setEditCollection(null);
     } catch (err) {
       throw err;
-    }
-  };
-
-  const handleDelete = (id) => {
-    if (confirm("Are you sure?")) {
-      deleteCol(id);
     }
   };
 
@@ -100,7 +68,7 @@ export default function Collection() {
         <div className="overflow-x-auto flex-1 pb-20 lg:pb-8">
           <CollectionTable
             data={collections}
-            onDelete={handleDelete}
+            onDelete={deleteCol}
             onEdit={handleEdit}
             isLoading={isLoading}
           />

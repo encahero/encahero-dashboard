@@ -12,7 +12,6 @@ export function useCards({
 }) {
   const { showErrorToast } = useToast();
 
-  console.log({ collectionName });
   return useQuery({
     queryKey: ["cards", searchValue, collectionName, type, page, rowQuantity],
     queryFn: async () => {

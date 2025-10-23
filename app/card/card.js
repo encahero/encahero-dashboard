@@ -6,14 +6,12 @@ import { Button } from "@/components/ui/button";
 
 import CardTable from "@/components/card-table";
 import CardCreation from "@/components/card-creation";
-import { cardsService } from "@/services";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { convertCardFormData } from "@/helpers";
+import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import getErrorMessage from "@/utils/get-error-message";
 import CardFilter from "@/components/card-filter";
 import CardTablePagination from "@/components/card-table-pagination";
 import { useCards } from "@/hooks/use-card";
+import { useCardMutations } from "@/hooks/use-card-mutation";
 
 export default function Cards() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -42,53 +40,18 @@ export default function Cards() {
     []
   );
 
-  const saveMutation = useMutation({
-    mutationFn: (data) => {
-      const formData = convertCardFormData(data);
-      if (editCard) {
-        return cardsService.updateCard(editCard.id, formData);
-      } else {
-        return cardsService.createCard(formData);
-      }
-    },
-
-    onSuccess: () => {
-      queryClient.invalidateQueries(["cards"]);
-      setModalOpen(false);
-      setEditCard(null);
-      showSuccessToast(
-        "Success",
-        editCard ? "Update card successfully" : "Create card successfully"
-      );
-    },
-    onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
-  });
-
-  const handleSave = async (data) => {
-    // Gọi mutation
-    try {
-      await saveMutation.mutateAsync(data);
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  const deleteMutation = useMutation({
-    mutationFn: (id) => cardsService.deleteCard(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["cards"]);
-      showSuccessToast("Success", "Delete card successfully");
-    },
-    onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
+  // Custom hook xử lý create/update/delete
+  const { handleSaveCard, handleDeleteCard } = useCardMutations({
+    editCard,
+    setEditCard,
+    setModalOpen,
+    showErrorToast,
+    showSuccessToast,
   });
 
   const handleEdit = useCallback((card) => {
     setEditCard(card);
     setModalOpen(true);
-  }, []);
-
-  const handleDelete = useCallback((id) => {
-    if (confirm("Are you sure ?")) deleteMutation.mutate(id);
   }, []);
 
   const handleClose = useCallback(() => {
@@ -116,9 +79,8 @@ export default function Cards() {
           <CardFilter onChange={handleChangeFilter} />
           <CardTable
             data={cardData.data}
-            onDelete={handleDelete}
+            onDelete={handleDeleteCard}
             onEdit={handleEdit}
-            onSubmit={handleSave}
             isLoading={isLoading}
           />
           <CardTablePagination
@@ -137,7 +99,7 @@ export default function Cards() {
           onClose={handleClose}
           isEdit={!!editCard}
           editValues={editCard}
-          onSubmit={handleSave}
+          onSubmit={handleSaveCard}
         />
       </div>
     </div>

@@ -4,48 +4,20 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { categoryService } from "@/services";
 import CategoryTable from "@/components/category-table";
 import CategoryCreation from "@/components/category-creation";
 import { useToast } from "@/hooks/use-toast";
 import getErrorMessage from "@/utils/get-error-message";
+import useCategoryMutation from "@/hooks/use-category-mutation";
 
 export default function Category() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editCategory, setEditCategory] = useState(null);
-  const queryClient = useQueryClient();
 
-  const { showErrorToast, showSuccessToast } = useToast();
-  const { mutateAsync: createCat } = useMutation({
-    mutationFn: (name) => categoryService.createCategory(name),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["category"]); // reload list
-      setModalOpen(false);
-      showSuccessToast("Success", "Create category successfully");
-    },
-    onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
-  });
-
-  const { mutate: deleteCat } = useMutation({
-    mutationFn: (id) => categoryService.deleteCategory(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["category"]); // reload list
-      showSuccessToast("Success", "Delete category successfully");
-    },
-    onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
-  });
-
-  const { mutateAsync: updateCat } = useMutation({
-    mutationFn: ({ id, name }) => categoryService.updateCategory(id, name),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["category"]);
-      setModalOpen(false);
-      setEditCategory(null);
-      showSuccessToast("Success", "Update category successfully");
-    },
-    onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
-  });
+  const { createCat, updateCat, deleteCat } = useCategoryMutation();
+  const { showErrorToast } = useToast();
 
   const { data: categories = [], isLoading } = useQuery({
     queryKey: ["category"],
@@ -69,6 +41,8 @@ export default function Category() {
       } else {
         await createCat(categoryName);
       }
+      setModalOpen(false);
+      setEditCategory(null);
     } catch (err) {
       throw err;
     }
@@ -77,12 +51,6 @@ export default function Category() {
   const handleEdit = (cat) => {
     setEditCategory(cat);
     setModalOpen(true);
-  };
-
-  const handleDelete = (id) => {
-    if (confirm("Are you sure?")) {
-      deleteCat(id);
-    }
   };
 
   const handleCloseModal = () => {
@@ -100,7 +68,7 @@ export default function Category() {
         <div className="overflow-x-auto flex-1 pb-20 lg:pb-8">
           <CategoryTable
             data={categories}
-            onDelete={handleDelete}
+            onDelete={deleteCat}
             onEdit={handleEdit}
             isLoading={isLoading}
           />
