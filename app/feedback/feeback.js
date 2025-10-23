@@ -22,9 +22,9 @@ import getErrorMessage from "@/utils/get-error-message";
 
 const FeedBackItem = ({ user, text, images, createdAt, onClickImage }) => {
   return (
-    <Card className="bg-[var(--sidebar)] text-[var(--sidebar-foreground)] shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+    <Card className="bg-[var(--sidebar)] text-[var(--sidebar-foreground)] shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden ">
       <CardHeader className="flex items-center space-x-2">
-        <Avatar>
+        <Avatar className="bg-white border">
           <AvatarImage src={getImageUrl(user.avatar, "avatar")} />
         </Avatar>
         <div>
@@ -83,12 +83,14 @@ export default function Feedback() {
   });
 
   return (
-    <div className="p-12">
-      <h1 className="text-3xl font-bold mb-4">Feedbacks</h1>
+    <div className="">
+      <h1 className="text-3xl font-bold mb-4 ml-8 mt-8 lg:ml-12 lg:mt-12">
+        Feedbacks
+      </h1>
 
-      <ScrollArea className="h-[85vh]">
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-4 pb-10 justify-center">
-          {feedbacks.map((fb) => (
+      <ScrollArea className="h-[85vh] pb-8 lg:pb-12">
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-4 pb-10 justify-center px-8 lg:px-12">
+          {[...feedbacks, ...feedbacks, ...feedbacks].map((fb) => (
             <FeedBackItem
               key={fb.id}
               user={fb?.user}

@@ -1,8 +1,24 @@
 import instance from "@/config/axios";
 
-export const getAllCards = async () => {
+export const getAllCards = async ({
+  searchValue,
+  collectionName,
+  type,
+  page,
+  rowQuantity,
+}) => {
   try {
-    const res = await instance.get("/cards");
+    // Convert query object to query string
+    const queryString = new URLSearchParams();
+
+    if (searchValue) queryString.append("searchValue", searchValue);
+    if (collectionName && collectionName !== "all")
+      queryString.append("collectionName", collectionName);
+    if (type && type !== "all") queryString.append("type", type);
+    if (page) queryString.append("page", String(page));
+    if (rowQuantity) queryString.append("limit", String(rowQuantity));
+
+    const res = await instance.get(`/cards?${queryString.toString()}`);
     return res.data;
   } catch (error) {
     throw error;

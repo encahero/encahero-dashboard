@@ -88,7 +88,6 @@ function CardCreation({ isOpen, onClose, isEdit, onSubmit, editValues }) {
     setImageType("url");
     setPreview(null);
     reset(defaultValues);
-    currentEntryIndex.current = 0;
   };
 
   const handleFileUpload = (e) => {
@@ -105,7 +104,6 @@ function CardCreation({ isOpen, onClose, isEdit, onSubmit, editValues }) {
     setPreview(null);
     setImageType("url");
     onClose();
-    currentEntryIndex.current = 0;
   };
 
   const handleFill = async (e) => {

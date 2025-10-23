@@ -1,17 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
 import CardTable from "@/components/card-table";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import CardCreation from "@/components/card-creation";
 import { cardsService } from "@/services";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { convertCardFormData } from "@/helpers";
 import { useToast } from "@/hooks/use-toast";
 import getErrorMessage from "@/utils/get-error-message";
+import CardFilter from "@/components/card-filter";
+import CardTablePagination from "@/components/card-table-pagination";
+import { useCards } from "@/hooks/use-card";
 
 export default function Cards() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -19,22 +21,26 @@ export default function Cards() {
   const queryClient = useQueryClient();
   const { showErrorToast, showSuccessToast } = useToast();
 
-  const {
-    data: cards = [],
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["cards"],
-    queryFn: async () => {
-      try {
-        const res = await cardsService.getAllCards();
-        return res;
-      } catch (error) {
-        showErrorToast("Ops", getErrorMessage(err));
-        return [];
-      }
-    },
+  const [filterValues, setFilterValues] = useState({
+    searchValue: "",
+    collectionName: "",
+    type: "all",
+    rowQuantity: 20,
   });
+
+  const [page, setPage] = useState(1);
+
+  const { data: cardData = [], isLoading } = useCards({
+    ...filterValues,
+    page,
+  });
+
+  const handleChangeFilter = useMemo(
+    () => (values) => {
+      setFilterValues(values);
+    },
+    []
+  );
 
   const saveMutation = useMutation({
     mutationFn: (data) => {
@@ -76,34 +82,53 @@ export default function Cards() {
     onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
   });
 
-  const handleEdit = (card) => {
+  const handleEdit = useCallback((card) => {
     setEditCard(card);
     setModalOpen(true);
-  };
+  }, []);
 
-  const handleDelete = (id) => {
+  const handleDelete = useCallback((id) => {
     if (confirm("Are you sure ?")) deleteMutation.mutate(id);
-  };
+  }, []);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setEditCard(null);
     setModalOpen(false);
-  };
+  }, []);
+
+  const pageNext = useCallback(() => {
+    setPage((p) => Math.min(cardData.totalPages, p + 1));
+  }, [page]);
+
+  const pagePrev = useCallback(() => {
+    setPage((p) => Math.max(1, p - 1));
+  }, [page]);
 
   return (
-    <div className="h-full flex-1">
+    <div className="flex-1 h-full">
       <div className="p-8 h-full">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-3xl font-bold">Cards</h1>
           <Button onClick={() => setModalOpen(true)}>New Card</Button>
         </div>
 
-        <div className="overflow-x-auto flex-1">
+        <div className="overflow-x-auto flex-1 pb-20 lg:pb-8">
+          <CardFilter onChange={handleChangeFilter} />
           <CardTable
-            data={cards}
+            data={cardData.data}
             onDelete={handleDelete}
             onEdit={handleEdit}
             onSubmit={handleSave}
+            isLoading={isLoading}
+          />
+          <CardTablePagination
+            page={page}
+            totalPages={cardData.totalPages}
+            startIdx={(page - 1) * (filterValues.rowQuantity || 20)}
+            visibleLength={cardData.data?.length || 0}
+            totalCount={cardData.total || 0}
+            onPrev={pagePrev}
+            onNext={pageNext}
           />
         </div>
 

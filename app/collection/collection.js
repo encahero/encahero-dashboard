@@ -97,12 +97,13 @@ export default function Collection() {
           <h1 className="text-3xl font-bold">Collections</h1>
           <Button onClick={() => setModalOpen(true)}>New Collection</Button>
         </div>
-
-        <CollectionTable
-          data={collections}
-          onDelete={handleDelete}
-          onEdit={handleEdit}
-        />
+        <div className="overflow-x-auto flex-1 pb-20 lg:pb-8">
+          <CollectionTable
+            data={collections}
+            onDelete={handleDelete}
+            onEdit={handleEdit}
+          />
+        </div>
 
         {/* Modal */}
         <CollectionCreation

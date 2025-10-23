@@ -97,11 +97,13 @@ export default function Category() {
           <h1 className="text-3xl font-bold">Categories</h1>
           <Button onClick={() => setModalOpen(true)}>New Category</Button>
         </div>
-        <CategoryTable
-          data={categories}
-          onDelete={handleDelete}
-          onEdit={handleEdit}
-        />
+        <div className="overflow-x-auto flex-1 pb-20 lg:pb-8">
+          <CategoryTable
+            data={categories}
+            onDelete={handleDelete}
+            onEdit={handleEdit}
+          />
+        </div>
 
         {/* Modal */}
         <CategoryCreation

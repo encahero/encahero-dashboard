@@ -63,7 +63,7 @@ export default function DefaultLayout({ children }) {
           {isSidebarOpen ? <X size={18} /> : <Menu size={18} />}
         </Button>
         {/* Main content */}
-        <main className="flex-1 relative overflow-auto">
+        <main className="flex-1 h-full relative overflow-auto">
           {/* Toggle button */}
 
           {children}
