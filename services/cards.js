@@ -5,7 +5,7 @@ export const getAllCards = async ({
   collectionName,
   type,
   page,
-  rowQuantity,
+  limit,
 }) => {
   try {
     // Convert query object to query string
@@ -16,7 +16,7 @@ export const getAllCards = async ({
       queryString.append("collectionName", collectionName);
     if (type && type !== "all") queryString.append("type", type);
     if (page) queryString.append("page", String(page));
-    if (rowQuantity) queryString.append("limit", String(rowQuantity));
+    if (limit) queryString.append("limit", String(limit));
 
     const res = await instance.get(`/cards?${queryString.toString()}`);
     return res.data;

@@ -9,7 +9,7 @@ import CardCreation from "@/components/card-creation";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import CardFilter from "@/components/card-filter";
-import CardTablePagination from "@/components/card-table-pagination";
+import CardTablePagination from "@/components/table-pagination";
 import { useCards } from "@/hooks/use-card";
 import { useCardMutations } from "@/hooks/use-card-mutation";
 

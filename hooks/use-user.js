@@ -1,25 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
-import { cardsService } from "@/services";
+import { userService } from "@/services";
 import { useToast } from "@/hooks/use-toast";
 import getErrorMessage from "@/utils/get-error-message";
 
-export function useCards({
-  searchValue,
-  collectionName,
-  type,
-  page,
-  rowQuantity,
-}) {
+export function useUsers({ searchValue, page, rowQuantity }) {
   const { showErrorToast } = useToast();
 
   return useQuery({
-    queryKey: ["cards", searchValue, collectionName, type, page, rowQuantity],
+    queryKey: ["users", searchValue, page, rowQuantity],
     queryFn: async () => {
       try {
-        const res = await cardsService.getAllCards({
+        const res = await userService.getAllUsers({
           searchValue,
-          collectionName,
-          type,
           page,
           limit: rowQuantity,
         });

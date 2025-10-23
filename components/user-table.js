@@ -4,12 +4,11 @@ import { Button } from "@/components/ui/button";
 import { PenLineIcon, Trash2Icon } from "lucide-react";
 import getImageUrl from "@/utils/get-image-url";
 import formatDate from "@/utils/format-date";
-import { Input } from "./ui/input";
 import { useMemo, useState } from "react";
 import { headerTextClassName } from "@/constants";
+import TableSkeleton from "./table-loading";
 
-export default function UserTable({ data, onEdit, onDelete }) {
-  const [search, setSearch] = useState("");
+export default function UserTable({ data = [], onEdit, onDelete, isLoading }) {
   const [sortConfig, setSortConfig] = useState({
     key: "created_at",
     direction: "asc",
@@ -18,30 +17,15 @@ export default function UserTable({ data, onEdit, onDelete }) {
   const handleSort = (key) => {
     setSortConfig((prev) => {
       if (prev.key === key) {
-        // Đổi chiều nếu cùng cột
         return { key, direction: prev.direction === "asc" ? "desc" : "asc" };
       }
       return { key, direction: "asc" };
     });
   };
 
-  // Tính toán danh sách hiển thị (lọc + sắp xếp)
   const filteredData = useMemo(() => {
-    const keyword = search.toLowerCase();
-
-    const filtered = data.filter((u) => {
-      const fullName = (
-        (u.firstName || "") +
-        " " +
-        (u.lastName || "")
-      ).toLowerCase();
-      const username = (u.username || "").toLowerCase();
-      return fullName.includes(keyword) || username.includes(keyword);
-    });
-
-    // sort
     const { key, direction } = sortConfig;
-    return [...filtered].sort((a, b) => {
+    return [...data].sort((a, b) => {
       let aVal = a[key];
       let bVal = b[key];
 
@@ -54,23 +38,10 @@ export default function UserTable({ data, onEdit, onDelete }) {
       if (aVal > bVal) return direction === "asc" ? 1 : -1;
       return 0;
     });
-  }, [data, search, sortConfig]);
+  }, [data, sortConfig]);
 
   return (
     <div className="space-y-4">
-      {/* Header + Search */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <h2 className="text-lg sm:text-xl font-semibold tracking-wide">
-          User List
-        </h2>
-        <Input
-          placeholder="Search by name or username..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="max-w-xs"
-        />
-      </div>
-
       {/* Table */}
       <div className="overflow-auto border rounded bg-[var(--sidebar)] h-[70vh] w-full">
         <table className="w-full min-w-[1000px] table-auto border-collapse">
@@ -99,7 +70,9 @@ export default function UserTable({ data, onEdit, onDelete }) {
             </tr>
           </thead>
           <tbody>
-            {filteredData.length > 0 ? (
+            {isLoading ? (
+              <TableSkeleton rows={5} columns={9} />
+            ) : filteredData.length > 0 ? (
               filteredData.map((u, index) => (
                 <tr
                   key={`${u.id}-${index}`}
@@ -122,7 +95,8 @@ export default function UserTable({ data, onEdit, onDelete }) {
                   <td className="px-4 py-2">{formatDate(u.updated_at)}</td>
                   <td className="px-4 py-2">{u.time_zone}</td>
                   <td className="px-4 py-2 flex space-x-2">
-                    <Button
+                    --
+                    {/* <Button
                       size="sm"
                       variant="outline"
                       onClick={() => onEdit?.(u)}
@@ -135,7 +109,7 @@ export default function UserTable({ data, onEdit, onDelete }) {
                       onClick={() => onDelete?.(u.id)}
                     >
                       <Trash2Icon className="w-4 h-4" />
-                    </Button>
+                    </Button> */}
                   </td>
                 </tr>
               ))

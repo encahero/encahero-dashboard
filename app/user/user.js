@@ -1,7 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 import UserGrowChart from "@/components/user-grow-chart";
 import UserTable from "@/components/user-table";
@@ -9,16 +8,23 @@ import { userService } from "@/services";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import getErrorMessage from "@/utils/get-error-message";
+import UserFilter from "@/components/user-filter";
+import { useUsers } from "@/hooks/use-user";
+import CardTablePagination from "@/components/table-pagination";
 
 export default function UserPage() {
   const { showErrorToast } = useToast();
-  const {
-    data: users = [],
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["users"],
-    queryFn: () => userService.getAllUsers(),
+
+  const [filterValues, setFilterValues] = useState({
+    searchValue: "",
+    rowQuantity: 20,
+  });
+
+  const [page, setPage] = useState(1);
+
+  const { data: userData = [], isLoading } = useUsers({
+    ...filterValues,
+    page,
   });
 
   const { data: usersGrowth = [] } = useQuery({
@@ -34,8 +40,24 @@ export default function UserPage() {
     },
   });
 
+  const handleChangeFilter = useMemo(
+    () => (values) => {
+      console.log(values);
+      setFilterValues(values);
+    },
+    []
+  );
+
   const totalUsers = usersGrowth?.totalUsers ?? 0;
   const chartData = usersGrowth?.data ?? [];
+
+  const pageNext = useCallback(() => {
+    setPage((p) => Math.min(userData.totalPages, p + 1));
+  }, [userData?.totalPages]);
+
+  const pagePrev = useCallback(() => {
+    setPage((p) => Math.max(1, p - 1));
+  }, []);
 
   return (
     <div className="h-full w-full">
@@ -49,7 +71,18 @@ export default function UserPage() {
           </CardContent>
         </Card>
         <UserGrowChart data={chartData} />
-        <UserTable data={users} />
+        <UserFilter onChange={handleChangeFilter} />
+        <UserTable data={userData.data || []} isLoading={isLoading} />
+
+        <CardTablePagination
+          page={page}
+          totalPages={userData.totalPages}
+          startIdx={(page - 1) * (filterValues.rowQuantity || 20)}
+          visibleLength={userData.data?.length || 0}
+          totalCount={userData.total || 0}
+          onPrev={pagePrev}
+          onNext={pageNext}
+        />
       </div>
     </div>
   );

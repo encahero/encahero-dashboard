@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 
-function CardTablePagination({
+function TablePagination({
   page,
   totalPages,
   startIdx,
@@ -44,4 +44,4 @@ function CardTablePagination({
   );
 }
 
-export default CardTablePagination;
+export default TablePagination;
