@@ -90,7 +90,7 @@ export default function Feedback() {
 
       <ScrollArea className="h-[85vh] pb-8 lg:pb-12">
         <div className="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-4 pb-10 justify-center px-8 lg:px-12">
-          {[...feedbacks, ...feedbacks, ...feedbacks].map((fb) => (
+          {feedbacks.map((fb) => (
             <FeedBackItem
               key={fb.id}
               user={fb?.user}

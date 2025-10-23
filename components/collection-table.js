@@ -3,8 +3,10 @@ import formatDate from "@/utils/format-date";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { headerTextClassName } from "@/constants";
+import { Skeleton } from "./ui/skeleton";
+import TableSkeleton from "./table-loading";
 
-function CollectionTable({ data, onDelete, onEdit }) {
+function CollectionTable({ data, onDelete, onEdit, isLoading }) {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const [collections, setCollections] = useState([]);
 
@@ -82,28 +84,42 @@ function CollectionTable({ data, onDelete, onEdit }) {
         </thead>
 
         <tbody>
-          {collections.map((col) => (
-            <tr key={col.id} className="hover:bg-muted/50">
-              <td className="px-4 py-2">{col.id}</td>
-              <td className="px-4 py-2">{col.name}</td>
-              <td className="px-4 py-2">{col.category.name}</td>
-              <td className="px-4 py-2">{col.card_count}</td>
-              <td className="px-4 py-2">{col.register_count}</td>
-              <td className="px-4 py-2">{formatDate(col.updated_at)}</td>
-              <td className="px-4 py-2 flex space-x-2">
-                <Button size="sm" variant="outline" onClick={() => onEdit(col)}>
-                  <PenLineIcon />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  onClick={() => onDelete(col.id)}
-                >
-                  <Trash2Icon />
-                </Button>
+          {isLoading ? (
+            <TableSkeleton rows={5} columns={7} />
+          ) : collections.length > 0 ? (
+            collections.map((col) => (
+              <tr key={col.id} className="hover:bg-muted/50">
+                <td className="px-4 py-2">{col.id}</td>
+                <td className="px-4 py-2">{col.name}</td>
+                <td className="px-4 py-2">{col.category.name}</td>
+                <td className="px-4 py-2">{col.card_count}</td>
+                <td className="px-4 py-2">{col.register_count}</td>
+                <td className="px-4 py-2">{formatDate(col.updated_at)}</td>
+                <td className="px-4 py-2 flex space-x-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => onEdit(col)}
+                  >
+                    <PenLineIcon />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => onDelete(col.id)}
+                  >
+                    <Trash2Icon />
+                  </Button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={8} className="text-center text-gray-500 py-8">
+                No category found
               </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
     </div>

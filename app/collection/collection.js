@@ -17,7 +17,7 @@ export default function Collection() {
   const { showErrorToast, showSuccessToast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: collections = [] } = useQuery({
+  const { data: collections = [], isLoading } = useQuery({
     queryKey: ["collections"],
     queryFn: async () => {
       try {
@@ -102,6 +102,7 @@ export default function Collection() {
             data={collections}
             onDelete={handleDelete}
             onEdit={handleEdit}
+            isLoading={isLoading}
           />
         </div>
 

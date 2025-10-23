@@ -47,7 +47,7 @@ export default function Category() {
     onError: (err) => showErrorToast("Ops!", getErrorMessage(err)),
   });
 
-  const { data: categories = [] } = useQuery({
+  const { data: categories = [], isLoading } = useQuery({
     queryKey: ["category"],
     queryFn: async () => {
       try {
@@ -102,6 +102,7 @@ export default function Category() {
             data={categories}
             onDelete={handleDelete}
             onEdit={handleEdit}
+            isLoading={isLoading}
           />
         </div>
 

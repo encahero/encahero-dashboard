@@ -98,11 +98,11 @@ export default function Cards() {
 
   const pageNext = useCallback(() => {
     setPage((p) => Math.min(cardData.totalPages, p + 1));
-  }, [page]);
+  }, [cardData?.totalPages]);
 
   const pagePrev = useCallback(() => {
     setPage((p) => Math.max(1, p - 1));
-  }, [page]);
+  }, []);
 
   return (
     <div className="flex-1 h-full">

@@ -9,6 +9,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
+import useEnter from "@/hooks/user-enter";
 
 function CategoryCreation({ isOpen, onClose, editData, onSubmit }) {
   const [name, setName] = useState(editData?.name || "");
@@ -23,6 +24,9 @@ function CategoryCreation({ isOpen, onClose, editData, onSubmit }) {
     await onSubmit(name);
     setName("");
   };
+
+  // Hook enter
+  useEnter(handleSubmit, [name, isOpen]);
 
   const handleClose = () => {
     setName("");

@@ -16,11 +16,15 @@ import { categoryService } from "@/services";
 
 import { useToast } from "@/hooks/use-toast";
 import getErrorMessage from "@/utils/get-error-message";
+import useEnter from "@/hooks/user-enter";
 
 function CollectionCreation({ isOpen, onClose, editData, onSubmit }) {
   const [name, setName] = useState("");
   const [categoryName, setCategoryName] = useState("");
   const { showErrorToast } = useToast();
+
+  // Hook enter
+
   useEffect(() => {
     if (editData) {
       setName(editData.name);
@@ -53,6 +57,8 @@ function CollectionCreation({ isOpen, onClose, editData, onSubmit }) {
     setName("");
     setCategoryName("");
   };
+
+  useEnter(handleSubmit, [name, categoryName, isOpen]);
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>

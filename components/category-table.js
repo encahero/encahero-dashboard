@@ -2,8 +2,9 @@ import { Button } from "@/components/ui/button";
 import { PenLineIcon, Trash2Icon } from "lucide-react";
 import formatDate from "@/utils/format-date";
 import { headerTextClassName } from "@/constants";
+import TableSkeleton from "./table-loading";
 
-function CategoryTable({ data, onDelete, onEdit }) {
+function CategoryTable({ data, onDelete, onEdit, isLoading }) {
   return (
     <div className="overflow-auto border rounded bg-[var(--sidebar)] h-[80vh] w-full">
       <table className="w-full min-w-[700px] table-auto border-collapse">
@@ -17,26 +18,40 @@ function CategoryTable({ data, onDelete, onEdit }) {
           </tr>
         </thead>
         <tbody>
-          {data.map((cat, index) => (
-            <tr key={index} className="hover:bg-muted/50">
-              <td className="px-4 py-2">{cat.id}</td>
-              <td className="px-4 py-2">{cat.name}</td>
-              <td className="px-4 py-2">{cat.collection_count}</td>
-              <td className="px-4 py-2">{formatDate(cat.updated_at)}</td>
-              <td className="px-4 py-2 flex space-x-2">
-                <Button size="sm" variant="outline" onClick={() => onEdit(cat)}>
-                  <PenLineIcon />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  onClick={() => onDelete(cat.id)}
-                >
-                  <Trash2Icon />
-                </Button>
+          {isLoading ? (
+            <TableSkeleton rows={5} columns={5} />
+          ) : data.length > 0 ? (
+            data.map((cat, index) => (
+              <tr key={index} className="hover:bg-muted/50">
+                <td className="px-4 py-2">{cat.id}</td>
+                <td className="px-4 py-2">{cat.name}</td>
+                <td className="px-4 py-2">{cat.collection_count}</td>
+                <td className="px-4 py-2">{formatDate(cat.updated_at)}</td>
+                <td className="px-4 py-2 flex space-x-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => onEdit(cat)}
+                  >
+                    <PenLineIcon />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => onDelete(cat.id)}
+                  >
+                    <Trash2Icon />
+                  </Button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={8} className="text-center text-gray-500 py-8">
+                No cards found
               </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
     </div>
