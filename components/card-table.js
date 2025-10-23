@@ -7,34 +7,81 @@ import { headerTextClassName } from "@/constants";
 import TableSkeleton from "./table-loading";
 
 function CardTable({ data = [], onDelete, onEdit, isLoading = false }) {
+  const [sortConfig, setSortConfig] = useState({
+    key: "id",
+    direction: "desc",
+  });
+
+  const handleSort = (key) => {
+    setSortConfig((prev) => {
+      if (prev.key === key) {
+        return { key, direction: prev.direction === "asc" ? "desc" : "asc" };
+      }
+      return { key, direction: "asc" };
+    });
+  };
+
+  const sortedData = useMemo(() => {
+    if (!Array.isArray(data) || data.length === 0) return [];
+    const { key, direction } = sortConfig;
+
+    return [...data].sort((a, b) => {
+      let aVal = a[key];
+      let bVal = b[key];
+
+      if (key === "updated_at") {
+        aVal = new Date(aVal).getTime();
+        bVal = new Date(bVal).getTime();
+      }
+
+      if (aVal < bVal) return direction === "asc" ? -1 : 1;
+      if (aVal > bVal) return direction === "asc" ? 1 : -1;
+      return 0;
+    });
+  }, [data, sortConfig]);
+
   return (
     <div>
       <div className="overflow-auto border rounded bg-[var(--sidebar)] max-h-[70vh]">
         <table className="w-full min-w-[800px] table-auto border-collapse">
           <thead className="sticky top-0 bg-gray-100 dark:bg-stone-950 z-2">
             <tr>
-              {[
-                "ID",
-                "Thumbnail",
-                "EN Word",
-                "VN Word",
-                "Type",
-                "Collection",
-                "Updated At",
-                "Actions",
-              ].map((text) => (
-                <th key={text} className={headerTextClassName}>
-                  {text}
-                </th>
-              ))}
+              <th
+                className={`${headerTextClassName} cursor-pointer`}
+                onClick={() => handleSort("id")}
+              >
+                ID{" "}
+                {sortConfig.key === "id"
+                  ? sortConfig.direction === "asc"
+                    ? "↑"
+                    : "↓"
+                  : ""}
+              </th>
+              <th className={headerTextClassName}>Thumbnail</th>
+              <th className={headerTextClassName}>EN Word</th>
+              <th className={headerTextClassName}>VN Word</th>
+              <th className={headerTextClassName}>Type</th>
+              <th className={headerTextClassName}>Collection</th>
+              <th
+                className={`${headerTextClassName} cursor-pointer`}
+                onClick={() => handleSort("updated_at")}
+              >
+                Updated At{" "}
+                {sortConfig.key === "updated_at"
+                  ? sortConfig.direction === "asc"
+                    ? "↑"
+                    : "↓"
+                  : ""}
+              </th>
+              <th className={headerTextClassName}>Actions</th>
             </tr>
           </thead>
 
           <tbody>
             {isLoading ? (
               <TableSkeleton rows={5} columns={8} />
-            ) : data.length > 0 ? (
-              data.map((card) => (
+            ) : sortedData.length > 0 ? (
+              sortedData.map((card) => (
                 <tr
                   key={card.id}
                   className="hover:bg-gray-200 dark:hover:bg-stone-800"

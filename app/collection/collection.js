@@ -15,8 +15,7 @@ import useCollectionMutation from "@/hooks/use-collection-mutation";
 export default function Collection() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editCollection, setEditCollection] = useState(null);
-  const { showErrorToast, showSuccessToast } = useToast();
-  const queryClient = useQueryClient();
+  const { showErrorToast } = useToast();
 
   const { data: collections = [], isLoading } = useQuery({
     queryKey: ["collections"],

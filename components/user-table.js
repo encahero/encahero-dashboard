@@ -47,7 +47,17 @@ export default function UserTable({ data = [], onEdit, onDelete, isLoading }) {
         <table className="w-full min-w-[1000px] table-auto border-collapse">
           <thead className="sticky top-0 bg-gray-100 dark:bg-stone-950 z-2">
             <tr>
-              <th className={headerTextClassName}>ID</th>
+              <th
+                className={`${headerTextClassName} cursor-pointer`}
+                onClick={() => handleSort("id")}
+              >
+                ID{" "}
+                {sortConfig.key === "id"
+                  ? sortConfig.direction === "asc"
+                    ? "↑"
+                    : "↓"
+                  : ""}
+              </th>
               <th className={headerTextClassName}>Email</th>
               <th className={headerTextClassName}>Username</th>
               <th className={headerTextClassName}>Avatar</th>
@@ -64,7 +74,17 @@ export default function UserTable({ data = [], onEdit, onDelete, isLoading }) {
                     : "↓"
                   : ""}
               </th>
-              <th className={headerTextClassName}>Updated At</th>
+              <th
+                className={`${headerTextClassName} cursor-pointer`}
+                onClick={() => handleSort("updated_at")}
+              >
+                Updated At{" "}
+                {sortConfig.key === "updated_at"
+                  ? sortConfig.direction === "asc"
+                    ? "↑"
+                    : "↓"
+                  : ""}
+              </th>
               <th className={headerTextClassName}>Time Zone</th>
               <th className={headerTextClassName}>Actions</th>
             </tr>
