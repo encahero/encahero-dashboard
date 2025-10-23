@@ -32,7 +32,7 @@ export default function UserTable({ data = [], onEdit, onDelete, isLoading }) {
   return (
     <div className="space-y-4">
       {/* Table */}
-      <div className="overflow-auto border rounded bg-[var(--sidebar)] h-[70vh] w-full">
+      <div className="overflow-auto border rounded bg-[var(--sidebar)] max-h-[70vh] w-full">
         <table className="w-full min-w-[1000px] table-auto border-collapse">
           <thead className="sticky top-0 bg-gray-100 dark:bg-stone-950 z-2">
             <tr>

@@ -27,7 +27,7 @@ function CategoryTable({ data, onDelete, onEdit, isLoading }) {
   );
 
   return (
-    <div className="overflow-auto border rounded bg-[var(--sidebar)] h-[80vh] w-full">
+    <div className="overflow-auto border rounded bg-[var(--sidebar)] max-h-[80vh] w-full">
       <table className="w-full min-w-[700px] table-auto border-collapse">
         <thead className="sticky top-0 bg-gray-100 dark:bg-stone-950 z-2">
           <tr>
