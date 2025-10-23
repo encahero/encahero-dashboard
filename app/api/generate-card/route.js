@@ -14,8 +14,8 @@ Generate a JSON object for creating a flashcard with the following structure:
   "type": string,          // e.g., noun, verb, adjective
   "meaning": string,       // Short meaning / explanation in VietNamese
   "ex": string[],          // Example sentences
-  "en_choice": string,     // English multiple choice, always 4 words separated by commas
-  "vn_choice": string,     //  Vietnamese multiple choice, always 4 words separated by commas
+  "en_choice": string,     // English multiple choice, always 4 words separated by commas, only wrong words,random and not meaning of en_choice
+  "vn_choice": string,     //  Vietnamese multiple choice, always 4 words separated by commas, only wrong words, random and not meaning of vn_choice
 }
 
 Use the English word: "${word}".
@@ -32,10 +32,10 @@ You are an AI assistant that generates JSON flashcards exactly matching a specif
   - type: part of speech like noun, verb, adjective, adverb (string)
   - meaning: short meaning or explanation in VietNamese(string)
   - ex: example sentences (array of strings)
-  - en_choice: English multiple choice (string)
-  - vn_choice: Vietnamese multiple choice (string) separated by commas
-  - collectionId: leave empty or default (string) separated by commas
-- Always return JSON that can be parsed directly.
+  - en_choice: English multiple choice (string),  only wrong words, random and not meaning of vn_choice
+  - vn_choice: Vietnamese multiple choice (string) separated by commas, only wrong words,  only wrong words, random and not meaning en_choice
+  - collectionId: leave empty or default (string) separated by commas,
+  - Always return JSON that can be parsed directly.
 `;
 
   const response = await fetch(
