@@ -39,6 +39,7 @@ function CollectionTable({ data, onDelete, onEdit, isLoading }) {
                   : "↓"
                 : ""}
             </th>
+            <th className={headerTextClassName}>Icon</th>
             <th className={headerTextClassName}>Name</th>
             <th className={headerTextClassName}>Category</th>
             <th
@@ -80,11 +81,12 @@ function CollectionTable({ data, onDelete, onEdit, isLoading }) {
 
         <tbody>
           {isLoading ? (
-            <TableSkeleton rows={5} columns={7} />
+            <TableSkeleton rows={5} columns={8} />
           ) : sortedData.length > 0 ? (
             sortedData.map((col) => (
               <tr key={col.id} className="hover:bg-muted/50">
                 <td className="px-4 py-2">{col.id}</td>
+                <td className="px-4 py-2">{col.icon || "--"}</td>
                 <td className="px-4 py-2">{col.name}</td>
                 <td className="px-4 py-2">{col.category.name}</td>
                 <td className="px-4 py-2">{col.card_count}</td>

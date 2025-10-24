@@ -10,8 +10,8 @@ export default function useCollectionMutation() {
   const { showErrorToast, showSuccessToast } = useToast();
 
   const { mutateAsync: createCol } = useMutation({
-    mutationFn: ({ name, categoryName }) =>
-      collectionService.createCollection(name, categoryName),
+    mutationFn: ({ name, categoryName, icon }) =>
+      collectionService.createCollection(name, categoryName, icon),
     onSuccess: () => {
       queryClient.invalidateQueries(["collections"]);
       showSuccessToast("Success", "Create collection successfully");
@@ -20,8 +20,8 @@ export default function useCollectionMutation() {
   });
 
   const { mutateAsync: updateCol } = useMutation({
-    mutationFn: ({ id, name, categoryName }) =>
-      collectionService.updateCollection(id, name, categoryName),
+    mutationFn: ({ id, name, categoryName, icon }) =>
+      collectionService.updateCollection(id, name, categoryName, icon),
     onSuccess: () => {
       queryClient.invalidateQueries(["collections"]);
       showSuccessToast("Success", "Update collection successfully");

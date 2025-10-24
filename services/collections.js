@@ -9,20 +9,25 @@ export const getAllCollections = async () => {
   }
 };
 
-export const createCollection = async (name, categoryName) => {
+export const createCollection = async (name, categoryName, icon) => {
   try {
-    const res = await instance.post("/collections", { name, categoryName });
+    const res = await instance.post("/collections", {
+      name,
+      categoryName,
+      icon,
+    });
     return res.data;
   } catch (error) {
     throw error;
   }
 };
 
-export const updateCollection = async (id, name, categoryName) => {
+export const updateCollection = async (id, name, categoryName, icon) => {
   try {
     const res = await instance.patch(`/collections/${id}`, {
       name,
       categoryName,
+      icon,
     });
     return res.data;
   } catch (error) {

@@ -19,7 +19,7 @@ Generate a JSON object for creating a flashcard with the following structure:
 }
 
 Use the English word: "${word}".
-Return **only JSON**, do not include any extra text.
+Return **only JSON**, **do not include any extra text**.
 `;
 
   const systemPrompt = `
@@ -35,7 +35,7 @@ You are an AI assistant that generates JSON flashcards exactly matching a specif
   - en_choice: English multiple choice (string),  only wrong words, random and not meaning of vn_choice
   - vn_choice: Vietnamese multiple choice (string) separated by commas, only wrong words,  only wrong words, random and not meaning en_choice
   - collectionId: leave empty or default (string) separated by commas,
-  - Always return JSON that can be parsed directly.
+  - **Always return only JSON** that can be parsed directly  **do not include any extra text**. . 
 `;
 
   const response = await fetch(

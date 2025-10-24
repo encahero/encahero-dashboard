@@ -37,13 +37,13 @@ export default function Collection() {
     setModalOpen(true);
   };
 
-  const handleSave = async ({ name, categoryName }) => {
+  const handleSave = async ({ name, categoryName, icon }) => {
     if (!name) return;
     try {
       if (editCollection) {
-        await updateCol({ id: editCollection.id, name, categoryName });
+        await updateCol({ id: editCollection.id, name, categoryName, icon });
       } else {
-        await createCol({ name, categoryName });
+        await createCol({ name, categoryName, icon });
       }
       setModalOpen(false);
       setEditCollection(null);
